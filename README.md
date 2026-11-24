@@ -1,8 +1,8 @@
 # Simple Cooking Tooltip
 
-Tooltip helper for **World of Warcraft: Forever** that shows where to find a cooking ingredient and which Cooking skill its recipes need.
+Tooltip helper for **World of Warcraft: Forever**.
 
-Hover an ingredient to see up to three main areas, plus the Cooking skill level at which a recipe using it is learned (not the recipe name).
+Hover an ingredient to see where to farm it and which skill level the ingredient's recipes are used, in case you want to save it for that.
 
 | | |
 | --- | --- |
@@ -13,9 +13,9 @@ Hover an ingredient to see up to three main areas, plus the Cooking skill level 
 
 ## Features
 
-- Ingredient tooltips: `Cooking recipe skill: N` (lowest skill at which a recipe using the item is learned)
-- Up to three main areas (`Found in: ...`), most drops first
-- Vendor-sold staples (spices, water, milk) show `Sold by vendors`
+- Up to three main mob types, and their areas, per ingredient, most drops first.
+- The skill required to use an ingredient for any recipe, in case you need to know whether to save it for later.
+- Vendor-sold ingredients marked as such.
 - Pure Lua unit tests; no SavedVariables; minimal memory footprint
 
 ## Install
@@ -35,9 +35,9 @@ Edit [`simple-cooking-tooltip/Config.lua`](simple-cooking-tooltip/Config.lua):
 | Setting | Default | Meaning |
 | --- | --- | --- |
 | `ENABLED` | `true` | Master flag. `false` disables slash, tooltips, and Options actions. |
-| `SHOW_AREAS` | `true` | Show the `Found in:` line. |
-| `SHOW_SKILL` | `true` | Show the `Cooking recipe skill:` line. |
-| `MAX_AREAS` | `3` | Areas listed (clamped to 1-3). |
+| `SHOW_SOURCES` | `true` | Show the `Found:` lines (mob type and area). |
+| `SHOW_SKILL` | `true` | Show the `Cooking skill needed for recipes:` line. |
+| `MAX_SOURCES` | `3` | Sources listed (clamped to 1-3). |
 | `SLASH_COMMAND` | `"/sct"` | Documented slash command. |
 
 After changing config or data files, reload with `/reload`.

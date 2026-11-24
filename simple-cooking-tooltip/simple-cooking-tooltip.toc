@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: Simple Cooking Tooltip
-## Notes: Shows where to find cooking ingredients and the Cooking skill their recipes need.
+## Notes: Shows where to farm a cooking ingredient and the Cooking skill needed to use it for any recipe.
 ## Author: GauteR
 ## Version: @project-version@
 ## DefaultState: enabled

@@ -13,13 +13,13 @@
 
 Cooking ingredient tooltip helper for **World of Warcraft: Forever**.
 
-Hover an ingredient to see where to farm it and which Cooking skill you need before a recipe using it becomes available.
+Hover an ingredient to see where to farm it and which skill level the ingredient's recipes are used, in case you want to save it for that.
 
 ## Features
 
-- Up to three main areas per ingredient, most drops first
-- The Cooking skill level at which a recipe using the ingredient is learned
-- Vendor-sold staples marked as such
+- Up to three main mob types, and their areas, per ingredient, most drops first.
+- The skill required to use an ingredient for any recipe, in case you need to know whether to save it for later.
+- Vendor-sold ingredients marked as such.
 - Slash `/sct` for status
 - Feature flags to turn tooltip lines on or off
 

@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Ingredient tooltips with up to three main areas and the lowest Cooking recipe skill that uses the item.
+### Changed
+- Tooltips now list up to three main mob types (or fishing) with their areas instead of areas only; skill line reworded to "Cooking skill needed for recipes".
+- Config: `SHOW_AREAS` -> `SHOW_SOURCES`, `MAX_AREAS` -> `MAX_SOURCES`.
 
 ## [0.1.0] - 2026-11-24
 
