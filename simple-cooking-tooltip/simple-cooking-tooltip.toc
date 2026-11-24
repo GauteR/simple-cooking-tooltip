@@ -1,0 +1,15 @@
+## Interface: 16001
+## Title: Simple Cooking Tooltip
+## Notes: Shows where to find cooking ingredients and the Cooking skill their recipes need.
+## Author: GauteR
+## Version: @project-version@
+## DefaultState: enabled
+## IconTexture: Interface\Icons\INV_Misc_Food_15
+
+Config.lua
+Locale/enUS.lua
+Data/Ingredients.lua
+Ingredients.lua
+Core.lua
+Tooltip.lua
+UI/Options.lua

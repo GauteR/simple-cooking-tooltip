@@ -1,0 +1,20 @@
+# Repo root is the VCS checkout; addon files live under simple-cooking-tooltip/.
+package-as: simple-cooking-tooltip
+
+move-folders:
+  simple-cooking-tooltip/simple-cooking-tooltip: simple-cooking-tooltip
+
+manual-changelog: CHANGELOG.md
+
+ignore:
+  - docs
+  - tests
+  - reports
+  - scripts
+  - README.md
+  - .luarc.json
+  - .github
+  - CHANGELOG.md
+  - MEMORIES.md
+
+enable-nolib-creation: no
