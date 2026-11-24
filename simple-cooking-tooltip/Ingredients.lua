@@ -1,10 +1,14 @@
--- Ingredient lookup and tooltip line formatting (pure Lua, no client API).
+-- Ingredient -> recipe lookup, faction filtering and tooltip line formatting (pure Lua, no client API).
 SimpleCookingTooltip = SimpleCookingTooltip or {}
 SimpleCookingTooltip.Ingredients = SimpleCookingTooltip.Ingredients or {}
 
 local Ingredients = SimpleCookingTooltip.Ingredients
 
-local DEFAULT_MAX_SOURCES = 3
+local DEFAULT_MAX_RECIPES = 5
+local MAX_RECIPES_LIMIT = 5
+
+-- Lower rank = easier to get. Unknown learn types sort last.
+local LEARN_RANK = { trainer = 1, item = 2 }
 
 function Ingredients:ParseItemId(link)
   if type(link) ~= "string" then
@@ -17,68 +21,106 @@ function Ingredients:ParseItemId(link)
   return tonumber(id)
 end
 
-function Ingredients:GetEntry(itemId)
-  if type(itemId) ~= "number" then
-    return nil
+-- Builds { [itemId] = { recipeId, ... } } from Data.RECIPES once (rebuilt when the data table changes).
+function Ingredients:GetIndex()
+  local recipes = SimpleCookingTooltip.Data and SimpleCookingTooltip.Data.RECIPES
+  if not recipes then
+    return {}
   end
-  local data = SimpleCookingTooltip.Data and SimpleCookingTooltip.Data.INGREDIENTS
-  return data and data[itemId] or nil
+  if self._indexSource ~= recipes then
+    local index = {}
+    for recipeId, recipe in pairs(recipes) do
+      for _, itemId in ipairs(recipe.reagents or {}) do
+        local list = index[itemId]
+        if not list then
+          list = {}
+          index[itemId] = list
+        end
+        list[#list + 1] = recipeId
+      end
+    end
+    self._index = index
+    self._indexSource = recipes
+  end
+  return self._index
 end
 
 function Ingredients:IsTracked(itemId)
-  return self:GetEntry(itemId) ~= nil
+  return type(itemId) == "number" and self:GetIndex()[itemId] ~= nil
 end
 
-local function ClampSources(value)
-  value = tonumber(value) or DEFAULT_MAX_SOURCES
+local function ClampMax(value)
+  value = tonumber(value) or DEFAULT_MAX_RECIPES
   if value < 1 then
     return 1
-  elseif value > 3 then
-    return 3
+  elseif value > MAX_RECIPES_LIMIT then
+    return MAX_RECIPES_LIMIT
   end
   return math.floor(value)
 end
 
--- Returns the first `maxSources` (1-3) { name, area } pairs for an entry.
-function Ingredients:GetSources(entry, maxSources)
-  local sources = {}
-  if not entry or not entry.sources then
-    return sources
-  end
-  local limit = ClampSources(maxSources)
-  for i = 1, math.min(limit, #entry.sources) do
-    sources[#sources + 1] = entry.sources[i]
-  end
-  return sources
+local function Obtainable(recipe, faction)
+  -- No faction given (neutral/unknown): do not filter. Recipes without a faction are for everyone.
+  return recipe.faction == nil or faction == nil or recipe.faction == faction
 end
 
--- Returns an ordered list of tooltip line strings for an item id (empty when untracked).
-function Ingredients:BuildLines(itemId, config)
+local function Before(a, b)
+  local ra, rb = LEARN_RANK[a.recipe.learn] or 99, LEARN_RANK[b.recipe.learn] or 99
+  if ra ~= rb then
+    return ra < rb
+  end
+  if a.recipe.skill ~= b.recipe.skill then
+    return a.recipe.skill < b.recipe.skill
+  end
+  return a.recipe.name < b.recipe.name
+end
+
+-- Recipes using `itemId` that `faction` ("Alliance"/"Horde"/nil) can learn, easiest first.
+-- Returns up to `max` (1-5) recipe tables, and the lowest skill among ALL obtainable recipes.
+function Ingredients:GetRecipes(itemId, faction, max)
+  local ids = type(itemId) == "number" and self:GetIndex()[itemId] or nil
+  local recipes = SimpleCookingTooltip.Data and SimpleCookingTooltip.Data.RECIPES
+  if not ids or not recipes then
+    return {}, nil
+  end
+  local found, lowest = {}, nil
+  for i = 1, #ids do
+    local recipe = recipes[ids[i]]
+    if recipe and Obtainable(recipe, faction) then
+      found[#found + 1] = { id = ids[i], recipe = recipe }
+      if not lowest or recipe.skill < lowest then
+        lowest = recipe.skill
+      end
+    end
+  end
+  table.sort(found, Before)
+  local limit = ClampMax(max)
+  local result = {}
+  for i = 1, math.min(limit, #found) do
+    result[i] = found[i].recipe
+  end
+  return result, lowest
+end
+
+-- Returns an ordered list of tooltip line strings (empty when untracked or nothing obtainable).
+-- `faction` is "Alliance", "Horde" or nil.
+function Ingredients:BuildLines(itemId, config, faction)
   local lines = {}
-  local entry = self:GetEntry(itemId)
-  if not entry then
+  config = config or {}
+  local recipes, lowest = self:GetRecipes(itemId, faction, config.MAX_RECIPES)
+  if #recipes == 0 then
     return lines
   end
-  config = config or {}
   local T = function(...)
     return SimpleCookingTooltip:T(...)
   end
 
-  if config.SHOW_SKILL ~= false and entry.skill then
-    lines[#lines + 1] = T("SKILL_LINE_FMT", entry.skill)
+  if config.SHOW_SKILL ~= false then
+    lines[#lines + 1] = T("SKILL_LINE_FMT", math.max(lowest, 1))
   end
-  if config.SHOW_SOURCES ~= false then
-    local sources = self:GetSources(entry, config.MAX_SOURCES)
-    for i = 1, #sources do
-      local name, area = sources[i][1], sources[i][2]
-      if area then
-        lines[#lines + 1] = T("SOURCE_LINE_FMT", name, area)
-      else
-        lines[#lines + 1] = T("SOURCE_NAME_FMT", name)
-      end
-    end
-    if #sources == 0 and entry.vendor then
-      lines[#lines + 1] = T("VENDOR_LINE")
+  if config.SHOW_RECIPES ~= false then
+    for i = 1, #recipes do
+      lines[#lines + 1] = T("RECIPE_LINE_FMT", recipes[i].name, math.max(recipes[i].skill, 1))
     end
   end
   return lines

@@ -2,7 +2,7 @@
 
 Tooltip helper for **World of Warcraft: Forever**.
 
-Hover an ingredient to see where to farm it and which skill level the ingredient's recipes are used, in case you want to save it for that.
+Hover a cooking ingredient to see up to five recipes that use it, limited to the ones your faction can learn, easiest to get first.
 
 | | |
 | --- | --- |
@@ -13,9 +13,9 @@ Hover an ingredient to see where to farm it and which skill level the ingredient
 
 ## Features
 
-- Up to three main mob types, and their areas, per ingredient, most drops first.
-- The skill required to use an ingredient for any recipe, in case you need to know whether to save it for later.
-- Vendor-sold ingredients marked as such.
+- Up to five recipes per ingredient, each with the Cooking skill to learn it.
+- Faction aware: recipes only the other faction can learn are hidden. Easiest first: trainers, then recipe items, then lowest skill.
+- The lowest skill at which you can use the ingredient, in case you need to know whether to save it for later.
 - Pure Lua unit tests; no SavedVariables; minimal memory footprint
 
 ## Install
@@ -35,9 +35,9 @@ Edit [`simple-cooking-tooltip/Config.lua`](simple-cooking-tooltip/Config.lua):
 | Setting | Default | Meaning |
 | --- | --- | --- |
 | `ENABLED` | `true` | Master flag. `false` disables slash, tooltips, and Options actions. |
-| `SHOW_SOURCES` | `true` | Show the `Found:` lines (mob type and area). |
+| `SHOW_RECIPES` | `true` | Show the recipe lines. |
 | `SHOW_SKILL` | `true` | Show the `Cooking skill needed for recipes:` line. |
-| `MAX_SOURCES` | `3` | Sources listed (clamped to 1-3). |
+| `MAX_RECIPES` | `5` | Recipes listed (clamped to 1-5). |
 | `SLASH_COMMAND` | `"/sct"` | Documented slash command. |
 
 After changing config or data files, reload with `/reload`.
@@ -46,7 +46,7 @@ After changing config or data files, reload with `/reload`.
 
 | Doc | Contents |
 | --- | --- |
-| [`docs/DATA.md`](docs/DATA.md) | Where the ingredient data comes from and its limits |
+| [`docs/DATA.md`](docs/DATA.md) | Where the recipe data comes from and its limits |
 | [`docs/RELEASE.md`](docs/RELEASE.md) | Local packager / GitHub Release (`gh`) / CurseForge |
 | [`CHANGELOG.md`](CHANGELOG.md) | Keep a Changelog |
 | [`docs/CURSEFORGE.md`](docs/CURSEFORGE.md) | User-facing CurseForge description |

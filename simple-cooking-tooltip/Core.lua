@@ -12,6 +12,18 @@ function SimpleCookingTooltip:IsEnabled()
   return self.Config and self.Config.ENABLED == true
 end
 
+-- "Alliance", "Horde", or nil (neutral/unknown: recipes are not filtered by faction).
+function SimpleCookingTooltip:GetPlayerFaction()
+  if not UnitFactionGroup then
+    return nil
+  end
+  local faction = UnitFactionGroup("player")
+  if faction == "Alliance" or faction == "Horde" then
+    return faction
+  end
+  return nil
+end
+
 function SimpleCookingTooltip:PrintStatus()
   if self:IsEnabled() then
     Print(self:T("CHAT_STATUS_ON"))

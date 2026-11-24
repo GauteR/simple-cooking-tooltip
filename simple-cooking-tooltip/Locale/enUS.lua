@@ -12,12 +12,10 @@ L.CHAT_STATUS_OFF = "Addon is disabled in Config."
 
 L.OPTIONS_VERSION_FMT = "Version %s"
 L.SKILL_LINE_FMT = "Cooking skill needed for recipes: %d"
-L.SOURCE_LINE_FMT = "Found: %s (%s)"
-L.SOURCE_NAME_FMT = "Found: %s"
-L.VENDOR_LINE = "Sold by vendors"
+L.RECIPE_LINE_FMT = "%s (skill %d)"
 
 L.OPTIONS_HELP =
-  "Hover a cooking ingredient to see where to farm it (up to three main mob types and their areas) and the Cooking skill required to use it for any recipe, in case you want to save it for later. Vendor-sold ingredients are marked as such."
+  "Hover a cooking ingredient to see up to five recipes that use it, limited to recipes your faction can learn, easiest to get first (trainers before recipe items, then lowest skill), and the lowest Cooking skill needed to use it."
 
 
 -- Resolve a locale key; optional format args.

@@ -13,13 +13,13 @@
 
 Cooking ingredient tooltip helper for **World of Warcraft: Forever**.
 
-Hover an ingredient to see where to farm it and which skill level the ingredient's recipes are used, in case you want to save it for that.
+Hover a cooking ingredient to see up to five recipes that use it, limited to the ones your faction can learn, easiest to get first.
 
 ## Features
 
-- Up to three main mob types, and their areas, per ingredient, most drops first.
-- The skill required to use an ingredient for any recipe, in case you need to know whether to save it for later.
-- Vendor-sold ingredients marked as such.
+- Up to five recipes per ingredient, each with the Cooking skill to learn it.
+- Faction aware: recipes only the other faction can learn are hidden. Easiest first: trainers, then recipe items, then lowest skill.
+- The lowest skill at which you can use the ingredient, in case you need to know whether to save it for later.
 - Slash `/sct` for status
 - Feature flags to turn tooltip lines on or off
 

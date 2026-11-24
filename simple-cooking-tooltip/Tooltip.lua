@@ -50,14 +50,15 @@ function Tooltip:AppendForItem(tooltip, itemId)
   if not Ingredients then
     return
   end
-  local lines = Ingredients:BuildLines(itemId, SimpleCookingTooltip.Config)
+  local faction = SimpleCookingTooltip.GetPlayerFaction and SimpleCookingTooltip:GetPlayerFaction() or nil
+  local lines = Ingredients:BuildLines(itemId, SimpleCookingTooltip.Config, faction)
   if #lines == 0 then
     return
   end
 
   tooltip:AddLine(" ")
   for i = 1, #lines do
-    -- Gold text; wrap long area lists.
+    -- Gold text; wrap long recipe names.
     tooltip:AddLine(lines[i], 1, 0.82, 0.2, true)
   end
   tooltip[APPENDED_FLAG] = itemId
