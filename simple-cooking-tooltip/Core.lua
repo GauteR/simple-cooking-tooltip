@@ -38,42 +38,11 @@ function SimpleCookingTooltip:GetCookingSkill()
   return nil
 end
 
--- Recipes seen in the Cooking window this session (not persisted: Forever does not load SavedVariables
--- after a cold start). Filled by ScanCookingWindow; IsSpellKnown covers recipes in the spellbook.
-local knownRecipes = {}
-
-function SimpleCookingTooltip:ScanCookingWindow()
-  if not (GetTradeSkillLine and GetNumTradeSkills and GetTradeSkillInfo and GetTradeSkillRecipeLink) then
-    return
-  end
-  if GetTradeSkillLine() ~= "Cooking" then
-    return
-  end
-  for i = 1, GetNumTradeSkills() do
-    local _, skillType = GetTradeSkillInfo(i)
-    if skillType ~= "header" then
-      local link = GetTradeSkillRecipeLink(i)
-      local id = link and (link:match("enchant:(%d+)") or link:match("spell:(%d+)"))
-      if id then
-        knownRecipes[tonumber(id)] = true
-      end
-    end
-  end
-end
-
-function SimpleCookingTooltip.IsRecipeKnown(spellId)
-  if knownRecipes[spellId] then
-    return true
-  end
-  return IsSpellKnown ~= nil and IsSpellKnown(spellId) == true
-end
-
--- { faction, skill, isKnown } for Ingredients:BuildLines.
+-- { faction, skill } for Ingredients:BuildLines.
 function SimpleCookingTooltip:GetPlayerInfo()
   return {
     faction = self:GetPlayerFaction(),
     skill = self:GetCookingSkill(),
-    isKnown = self.IsRecipeKnown,
   }
 end
 
@@ -87,13 +56,7 @@ end
 
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("PLAYER_LOGIN")
-eventFrame:RegisterEvent("TRADE_SKILL_SHOW")
-eventFrame:RegisterEvent("TRADE_SKILL_UPDATE")
 eventFrame:SetScript("OnEvent", function(_, event)
-  if event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_UPDATE" then
-    SimpleCookingTooltip:ScanCookingWindow()
-    return
-  end
   if event ~= "PLAYER_LOGIN" then
     return
   end

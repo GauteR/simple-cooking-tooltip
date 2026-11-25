@@ -7,7 +7,7 @@
 - `faction`: `"Alliance"` or `"Horde"` when only that faction can learn it; omitted means both.
 - `reagents`: reagent item ids. The ingredient -> recipes index is built at load in `Ingredients.lua`.
 
-Selection on the tooltip: faction filter, then hide recipes below the player's Cooking skill, then keep the 5 easiest (trainer before item, then lowest skill, then name); they are displayed sorted by skill. Known recipes are green and unknown red; this uses `IsSpellKnown` and a per-session scan of the Cooking window (not persisted), so a recipe may show red until the Cooking window has been opened once this session. Unverified in-game.
+Selection on the tooltip (`Keep for:`): faction filter, then the recipe with the lowest required skill that is >= the player's Cooking skill (ties: trainer before recipe item, then name). Without a Cooking skill the lowest-skill recipe is used. Recipes the player already knows are not detected.
 
 [`Data/Sources.lua`](../simple-cooking-tooltip/Data/Sources.lua) maps reagent item id to `sources = { { mobOrObject, zone, faction? }, ... }` (up to three, most drops first) and `vendor = true` when vendors sell it. A source carries `faction` when its zone belongs to one faction only (see `ZONES` in the generator) and is hidden from the other faction. Sources cover 91 of 113 reagents; the rest (some herbs and juices, Simple Flour, and Forever-only items such as Hyjal Berries, Whimsyfin and Thick Logs) show recipes only.
 

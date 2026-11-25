@@ -1,21 +1,14 @@
 -- Ingredient -> recipe lookup, faction/skill filtering and tooltip line formatting (pure Lua, no client API).
--- `player` (optional) = { faction = "Alliance"|"Horde"|nil, skill = Cooking rank|nil,
---                         isKnown = function(spellId) -> boolean|nil }
+-- `player` (optional) = { faction = "Alliance"|"Horde"|nil, skill = Cooking rank|nil }
 SimpleCookingTooltip = SimpleCookingTooltip or {}
 SimpleCookingTooltip.Ingredients = SimpleCookingTooltip.Ingredients or {}
 
 local Ingredients = SimpleCookingTooltip.Ingredients
 
-local DEFAULT_MAX_RECIPES = 5
-local MAX_RECIPES_LIMIT = 5
 local DEFAULT_MAX_SOURCES = 3
 
--- Lower rank = easier to get. Unknown learn types sort last.
+-- Tie-break when two recipes need the same skill: easier to get first.
 local LEARN_RANK = { trainer = 1, item = 2 }
-
-local COLOR_KNOWN = "|cff33ff33"
-local COLOR_UNKNOWN = "|cffff4040"
-local COLOR_END = "|r"
 
 function Ingredients:ParseItemId(link)
   if type(link) ~= "string" then
@@ -56,16 +49,6 @@ function Ingredients:IsTracked(itemId)
   return type(itemId) == "number" and self:GetIndex()[itemId] ~= nil
 end
 
-local function ClampRecipes(value)
-  value = tonumber(value) or DEFAULT_MAX_RECIPES
-  if value < 1 then
-    return 1
-  elseif value > MAX_RECIPES_LIMIT then
-    return MAX_RECIPES_LIMIT
-  end
-  return math.floor(value)
-end
-
 local function ClampSources(value)
   value = tonumber(value) or DEFAULT_MAX_SOURCES
   if value < 1 then
@@ -81,50 +64,38 @@ local function Obtainable(recipe, faction)
   return recipe.faction == nil or faction == nil or recipe.faction == faction
 end
 
--- Easiest to get first: trainer, then recipe item, then lowest skill, then name.
-local function ByEase(a, b)
-  local ra, rb = LEARN_RANK[a.recipe.learn] or 99, LEARN_RANK[b.recipe.learn] or 99
+-- Lowest skill first; at equal skill the easier-to-get recipe, then name.
+local function Nearer(a, b)
+  if a.skill ~= b.skill then
+    return a.skill < b.skill
+  end
+  local ra, rb = LEARN_RANK[a.learn] or 99, LEARN_RANK[b.learn] or 99
   if ra ~= rb then
     return ra < rb
   end
-  if a.recipe.skill ~= b.recipe.skill then
-    return a.recipe.skill < b.recipe.skill
-  end
-  return a.recipe.name < b.recipe.name
+  return a.name < b.name
 end
 
-local function BySkill(a, b)
-  if a.recipe.skill ~= b.recipe.skill then
-    return a.recipe.skill < b.recipe.skill
-  end
-  return a.recipe.name < b.recipe.name
-end
-
--- Recipes using `itemId` that the player's faction can learn and that are not already outgrown
--- (required skill >= current Cooking skill). The `max` (1-5) easiest to get are kept, then
--- returned sorted by skill as { id = spellId, recipe = recipe } entries.
-function Ingredients:GetRecipes(itemId, player, max)
+-- The recipe using `itemId` that is nearest upwards from the player's Cooking skill (required skill
+-- >= current skill) among those the player's faction can learn. Returns the recipe table, or nil
+-- when nothing is left ("no future recipes"). Without a known skill the lowest-skill recipe is used.
+function Ingredients:GetNearestRecipe(itemId, player)
   local ids = type(itemId) == "number" and self:GetIndex()[itemId] or nil
   local recipes = SimpleCookingTooltip.Data and SimpleCookingTooltip.Data.RECIPES
   if not ids or not recipes then
-    return {}
+    return nil
   end
   player = player or {}
-  local found = {}
+  local best = nil
   for i = 1, #ids do
     local recipe = recipes[ids[i]]
     if recipe and Obtainable(recipe, player.faction) and (player.skill == nil or recipe.skill >= player.skill) then
-      found[#found + 1] = { id = ids[i], recipe = recipe }
+      if not best or Nearer(recipe, best) then
+        best = recipe
+      end
     end
   end
-  table.sort(found, ByEase)
-  local limit = ClampRecipes(max)
-  local kept = {}
-  for i = 1, math.min(limit, #found) do
-    kept[i] = found[i]
-  end
-  table.sort(kept, BySkill)
-  return kept
+  return best
 end
 
 -- Where to get an ingredient: up to `max` (1-3) { name, zone } pairs, skipping zones only the other
@@ -151,18 +122,9 @@ function Ingredients:GetSources(itemId, player, max)
   return sources, entry.vendor == true
 end
 
-local function Colorize(text, known)
-  if known == true then
-    return COLOR_KNOWN .. text .. COLOR_END
-  elseif known == false then
-    return COLOR_UNKNOWN .. text .. COLOR_END
-  end
-  return text
-end
-
 -- Returns tooltip lines (empty when there is nothing to show):
 --   "Found: Prowler (Elwynn Forest), sold by vendors"
---   "Recipes: Spiced Wolf Meat (50), ..."  (sorted by skill; green = known, red = not known)
+--   "Keep for: Spiced Wolf Meat (50)"   (nearest recipe upwards; no line when none is left)
 function Ingredients:BuildLines(itemId, config, player)
   local lines = {}
   config = config or {}
@@ -184,19 +146,10 @@ function Ingredients:BuildLines(itemId, config, player)
       lines[#lines + 1] = T("FOUND_LINE_FMT", table.concat(parts, ", "))
     end
   end
-  if config.SHOW_RECIPES ~= false then
-    local recipes = self:GetRecipes(itemId, player, config.MAX_RECIPES)
-    local parts = {}
-    for i = 1, #recipes do
-      local text = T("RECIPE_ENTRY_FMT", recipes[i].recipe.name, math.max(recipes[i].recipe.skill, 1))
-      local known = nil
-      if player.isKnown then
-        known = player.isKnown(recipes[i].id) and true or false
-      end
-      parts[#parts + 1] = Colorize(text, known)
-    end
-    if #parts > 0 then
-      lines[#lines + 1] = T("RECIPES_LINE_FMT", table.concat(parts, ", "))
+  if config.SHOW_KEEP_FOR ~= false then
+    local recipe = self:GetNearestRecipe(itemId, player)
+    if recipe then
+      lines[#lines + 1] = T("KEEP_FOR_LINE_FMT", recipe.name, math.max(recipe.skill, 1))
     end
   end
   return lines

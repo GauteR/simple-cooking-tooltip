@@ -4,12 +4,10 @@ SimpleCookingTooltip = SimpleCookingTooltip or {}
 SimpleCookingTooltip.Config = {
   -- Set to false to disable slash command, Options actions, and tooltip lines.
   ENABLED = true,
-  -- Ingredient hover: recipes that use it (only ones your faction can learn).
-  SHOW_RECIPES = true,
+  -- Ingredient hover: "Keep for:" the nearest recipe upwards from your Cooking skill (your faction only).
+  SHOW_KEEP_FOR = true,
   -- Ingredient hover: where to get it (mobs to farm and zone, or vendors), for your faction.
   SHOW_SOURCES = true,
-  -- Maximum number of recipes listed (1-5).
-  MAX_RECIPES = 5,
   -- Maximum number of sources listed (1-3).
   MAX_SOURCES = 3,
   ADDON_NAME = "Simple Cooking Tooltip",

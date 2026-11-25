@@ -14,11 +14,10 @@ L.OPTIONS_VERSION_FMT = "Version %s"
 L.FOUND_LINE_FMT = "Found: %s"
 L.SOURCE_ENTRY_FMT = "%s (%s)"
 L.VENDOR_ENTRY = "sold by vendors"
-L.RECIPES_LINE_FMT = "Recipes: %s"
-L.RECIPE_ENTRY_FMT = "%s (%d)"
+L.KEEP_FOR_LINE_FMT = "Keep for: %s (%d)"
 
 L.OPTIONS_HELP =
-  "Hover a cooking ingredient to see where to get it (mobs to farm and zones for your faction, or vendors) and up to five recipes that use it, sorted by skill. Recipes below your Cooking skill are hidden; green recipes you know, red ones you do not."
+  "Hover a cooking ingredient to see where to get it (mobs to farm and zones for your faction, or vendors) and which recipe to keep it for: the nearest one above your current Cooking skill that your faction can learn."
 
 
 -- Resolve a locale key; optional format args.

@@ -2,7 +2,7 @@
 
 Tooltip helper for **World of Warcraft: Forever**.
 
-Hover a cooking ingredient to see where to get it (mobs to farm, or vendors) and up to five recipes that use it, limited to your faction, easiest to get first.
+Hover a cooking ingredient to see where to get it (mobs to farm, or vendors) and which recipe to keep it for.
 
 | | |
 | --- | --- |
@@ -14,7 +14,7 @@ Hover a cooking ingredient to see where to get it (mobs to farm, or vendors) and
 ## Features
 
 - `Found:` one line with where to get the ingredient: up to three mobs to farm with their zones, and/or vendors.
-- `Recipes:` one line with up to five recipes that use it, sorted by skill. Green = you know the recipe, red = you do not. Recipes below your current Cooking skill are hidden.
+- `Keep for:` the nearest recipe upwards from your current Cooking skill that uses the ingredient, for example `Keep for: Spiced Wolf Meat (50)`. No line when no higher recipe is left.
 - Faction aware: zones and recipes only the other faction can use are hidden.
 - Pure Lua unit tests; no SavedVariables; minimal memory footprint
 
@@ -35,9 +35,8 @@ Edit [`simple-cooking-tooltip/Config.lua`](simple-cooking-tooltip/Config.lua):
 | Setting | Default | Meaning |
 | --- | --- | --- |
 | `ENABLED` | `true` | Master flag. `false` disables slash, tooltips, and Options actions. |
-| `SHOW_RECIPES` | `true` | Show the `Recipes:` line. |
+| `SHOW_KEEP_FOR` | `true` | Show the `Keep for:` line. |
 | `SHOW_SOURCES` | `true` | Show the `Found:` line. |
-| `MAX_RECIPES` | `5` | Recipes listed (clamped to 1-5). |
 | `MAX_SOURCES` | `3` | Sources listed (clamped to 1-3). |
 | `SLASH_COMMAND` | `"/sct"` | Documented slash command. |
 
