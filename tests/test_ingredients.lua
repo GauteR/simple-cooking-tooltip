@@ -7,6 +7,7 @@ local addonRoot = root .. "/../simple-cooking-tooltip"
 dofile(addonRoot .. "/Config.lua")
 dofile(addonRoot .. "/Locale/enUS.lua")
 dofile(addonRoot .. "/Data/Recipes.lua")
+dofile(addonRoot .. "/Data/Sources.lua")
 dofile(addonRoot .. "/Ingredients.lua")
 
 local failures = 0
@@ -59,9 +60,8 @@ assert_eq(bad, 0, "all recipes well-formed")
 assert_eq(count, 132, "all 132 Forever cooking recipes present")
 
 -- Lowest skill and ordering.
-local list, lowest = Ingredients:GetRecipes(WOLF_MEAT, nil, 5)
+local list = Ingredients:GetRecipes(WOLF_MEAT, nil, 5)
 assert_eq(#list, 2, "wolf meat is used by two recipes")
-assert_eq(lowest, 45, "lowest skill for wolf meat")
 assert_eq(list[1].name, "Charred Wolf Meat", "lowest skill first among trainer recipes")
 
 -- Cap at 5, trainer recipes before recipe-item recipes, then skill ascending.
@@ -89,17 +89,33 @@ assert_eq(#Ingredients:GetRecipes(SCORPID_STINGER, "Horde", 5), 1, "Horde recipe
 assert_eq(#Ingredients:GetRecipes(SCORPID_STINGER, "Alliance", 5), 0, "Horde recipe hidden from Alliance")
 assert_eq(#Ingredients:GetRecipes(CRAG_BOAR_RIB, nil, 5), 1, "no faction: nothing filtered")
 
+-- Sources: faction-filtered, capped, vendor flag.
+local all = Ingredients:GetSources(WOLF_MEAT, nil, 3)
+assert_eq(#all, 3, "no faction: all three wolf meat sources")
+local alliance = Ingredients:GetSources(WOLF_MEAT, "Alliance", 3)
+assert_eq(#alliance, 1, "Alliance only sees the Elwynn source")
+assert_eq(alliance[1][1], "Prowler", "Alliance source is Prowler")
+assert_eq(#Ingredients:GetSources(WOLF_MEAT, "Horde", 3), 2, "Horde sees the two Horde-zone sources")
+assert_eq(#Ingredients:GetSources(WOLF_MEAT, nil, 1), 1, "MAX_SOURCES = 1")
+assert_eq(#Ingredients:GetSources(WOLF_MEAT, nil, 99), 3, "MAX_SOURCES clamped to 3")
+assert_eq(#Ingredients:GetSources(SCORPID_STINGER, "Alliance", 3), 0, "Durotar sources hidden from Alliance")
+local _, vendor = Ingredients:GetSources(MILD_SPICES, "Horde", 3)
+assert_eq(vendor, true, "Mild Spices sold by vendors")
+
 -- Lines.
 local lines = Ingredients:BuildLines(WOLF_MEAT, config, "Alliance")
-assert_eq(#lines, 3, "skill + two recipes for wolf meat")
-assert_eq(lines[1], "Cooking skill needed for recipes: 45", "skill line")
+assert_eq(#lines, 3, "one source + two recipes for wolf meat (Alliance)")
+assert_eq(lines[1], "Found: Prowler (Elwynn Forest)", "source line first")
 assert_eq(lines[2], "Charred Wolf Meat (skill 45)", "first recipe line")
 assert_eq(lines[3], "Spiced Wolf Meat (skill 50)", "second recipe line")
-assert_eq(#Ingredients:BuildLines(MILD_SPICES, config, "Horde"), 6, "skill + five recipes")
+assert_eq(#Ingredients:BuildLines(WOLF_MEAT, config, "Horde"), 4, "two sources + two recipes (Horde)")
+local spiceLines = Ingredients:BuildLines(MILD_SPICES, config, "Horde")
+assert_eq(#spiceLines, 6, "vendor line + five recipes")
+assert_eq(spiceLines[1], "Sold by vendors", "vendor line first")
 assert_eq(#Ingredients:BuildLines(MILD_SPICES, { MAX_RECIPES = 2 }, "Horde"), 3, "MAX_RECIPES = 2")
-assert_eq(#Ingredients:BuildLines(WOLF_MEAT, { SHOW_SKILL = false }, nil), 2, "SHOW_SKILL = false hides skill")
-assert_eq(#Ingredients:BuildLines(WOLF_MEAT, { SHOW_RECIPES = false }, nil), 1, "SHOW_RECIPES = false hides recipes")
-assert_eq(#Ingredients:BuildLines(CRAG_BOAR_RIB, config, "Horde"), 0, "nothing obtainable yields no lines")
+assert_eq(#Ingredients:BuildLines(WOLF_MEAT, { SHOW_SOURCES = false }, nil), 2, "SHOW_SOURCES = false hides sources")
+assert_eq(#Ingredients:BuildLines(WOLF_MEAT, { SHOW_RECIPES = false }, nil), 3, "SHOW_RECIPES = false hides recipes")
+assert_eq(#Ingredients:BuildLines(CRAG_BOAR_RIB, config, "Horde"), 0, "nothing for this faction yields no lines")
 assert_eq(#Ingredients:BuildLines(6948, config, "Alliance"), 0, "untracked yields no lines")
 
 if failures > 0 then

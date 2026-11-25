@@ -9,6 +9,8 @@
 
 Ordering on the tooltip: trainer before item, then lowest skill, then name; at most 5 shown.
 
+[`Data/Sources.lua`](../simple-cooking-tooltip/Data/Sources.lua) maps reagent item id to `sources = { { mobOrObject, zone, faction? }, ... }` (up to three, most drops first) and `vendor = true` when vendors sell it. A source carries `faction` when its zone belongs to one faction only (see `ZONES` in the generator) and is hidden from the other faction. Sources cover 91 of 113 reagents; the rest (some herbs and juices, Simple Flour, and Forever-only items such as Hyjal Berries, Whimsyfin and Thick Logs) show recipes only.
+
 ## Provenance
 
 Generated 2026-11-24 from saved pages (kept in git-ignored `data-src/`):
@@ -18,6 +20,7 @@ Generated 2026-11-24 from saved pages (kept in git-ignored `data-src/`):
 | `bbb-cooking-recipes.psv` | Booty Bay Broker Forever recipe list API | All 132 recipes: spell id, name, skill, trainer or recipe item |
 | `bbb-forever-reagents.json` | Booty Bay Broker per-recipe cost API | Reagents of the 44 Forever-only recipes |
 | `wowhead-classic-cooking.html` | Wowhead Classic Cooking spell list | Reagents of the 88 recipes that also exist in Classic (matched by spell id) |
+| `ingredient-zones.lua` | Old `Data/Ingredients.lua` from git history (`git show 6759b6e:simple-cooking-tooltip/Data/Ingredients.lua`), from Wowhead Classic | Ingredient sources and zones |
 | `classic-sources.json` | `scripts/crawl-wowhead-sources.py` (Wowhead Classic spell pages) | Faction of recipe items/quests |
 
 Booty Bay Broker blocks automated requests, so those files were saved from a browser; terms of reuse of that site's data have not been reviewed. Wowhead: keep > 2.5 s between requests and stop on 403.

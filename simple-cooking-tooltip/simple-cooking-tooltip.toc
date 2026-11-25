@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: Simple Cooking Tooltip
-## Notes: Shows the Cooking recipes that use an ingredient (max 5, for your faction) and the skill needed.
+## Notes: Shows where to get a cooking ingredient and the Cooking recipes that use it (max 5, for your faction).
 ## Author: GauteR
 ## Version: @project-version@
 ## DefaultState: enabled
@@ -9,6 +9,7 @@
 Config.lua
 Locale/enUS.lua
 Data/Recipes.lua
+Data/Sources.lua
 Ingredients.lua
 Core.lua
 Tooltip.lua

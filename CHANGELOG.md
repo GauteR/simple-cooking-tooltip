@@ -9,15 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Tooltips list up to five Cooking recipes that use the ingredient, with the skill to learn each.
-- Faction filtering: recipes only the other faction can learn are hidden. Order: trainer recipes, then recipe items, then lowest skill.
-- Recipe data for all 132 Forever Cooking recipes (`Data/Recipes.lua`), with generator `scripts/gen-recipes.py`.
+- Faction filtering: recipes and source zones only the other faction can use are hidden. Recipe order: trainer, then recipe item, then lowest skill.
+- Recipe data for all 132 Forever Cooking recipes (`Data/Recipes.lua`) and ingredient sources (`Data/Sources.lua`), with generator `scripts/gen-recipes.py`.
 
 ### Changed
-- Skill line is now the lowest skill among the recipes your faction can learn.
-- Config: `SHOW_SOURCES` and `MAX_SOURCES` replaced by `SHOW_RECIPES` and `MAX_RECIPES` (default 5).
+- Config: `SHOW_RECIPES` and `MAX_RECIPES` (default 5) added; `SHOW_SKILL` removed.
 
 ### Removed
-- The `Found:` mob/area lines and the "Sold by vendors" line, and `Data/Ingredients.lua`.
+- The "Cooking skill needed for recipes" line (redundant with the recipe list) and `Data/Ingredients.lua` (split into `Recipes.lua` and `Sources.lua`).
 
 ### Fixed
 - `scripts/publish-local.*` ran tests that do not exist in this repository.
