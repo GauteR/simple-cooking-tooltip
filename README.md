@@ -13,7 +13,7 @@ Hover a cooking ingredient to see where to get it (mobs to farm, or vendors) and
 
 ## Features
 
-- `Found:` one line with where to get the ingredient: up to three mobs to farm with their zones, and/or vendors.
+- Where to get the ingredient, worded by how you get it, up to three sources in total: `Dropped by: Prowler (Elwynn Forest)`, `Fished: Darkshore, Elwynn Forest`, `Gathered: ...`, `Looted from: ...`, `Sold by vendors`.
 - `Keep for:` a recipe that still needs the ingredient, for example `Keep for: Murloc Fin Soup (130)`. A recipe counts while it is still orange or yellow for you (green recipes rarely give skill-ups, so they do not count); the nearest one upwards from your Cooking skill is named. No line when no recipe needs it any more.
 - Faction aware: zones and recipes only the other faction can use are hidden.
 - Pure Lua unit tests; no SavedVariables; minimal memory footprint
@@ -36,7 +36,7 @@ Edit [`simple-cooking-tooltip/Config.lua`](simple-cooking-tooltip/Config.lua):
 | --- | --- | --- |
 | `ENABLED` | `true` | Master flag. `false` disables slash, tooltips, and Options actions. |
 | `SHOW_KEEP_FOR` | `true` | Show the `Keep for:` line. |
-| `SHOW_SOURCES` | `true` | Show the `Found:` line. |
+| `SHOW_SOURCES` | `true` | Show the source lines (`Dropped by:`, `Fished:`, ...). |
 | `MAX_SOURCES` | `3` | Sources listed (clamped to 1-3). |
 | `SLASH_COMMAND` | `"/sct"` | Documented slash command. |
 

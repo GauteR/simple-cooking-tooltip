@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Tooltips show a `Found:` line (mobs and zones, or vendors) and a `Keep for:` line naming the nearest Cooking recipe that still needs the ingredient and is still orange or yellow for you (none when every recipe using it has turned green).
+- Tooltips show source lines worded by how you get it (`Dropped by:`, `Fished:`, `Gathered:`, `Looted from:`, `Sold by vendors`) and a `Keep for:` line naming the nearest Cooking recipe that still needs the ingredient and is still orange or yellow for you (none when every recipe using it has turned green).
 - Faction filtering: recipes and source zones only the other faction can use are hidden.
 - Recipe data for all 132 Forever Cooking recipes (`Data/Recipes.lua`) and ingredient sources (`Data/Sources.lua`), with generator `scripts/gen-recipes.py`.
 

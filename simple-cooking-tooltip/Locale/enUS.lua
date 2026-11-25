@@ -11,9 +11,12 @@ L.CHAT_STATUS_ON = "Tooltips enabled."
 L.CHAT_STATUS_OFF = "Addon is disabled in Config."
 
 L.OPTIONS_VERSION_FMT = "Version %s"
-L.FOUND_LINE_FMT = "Found: %s"
+L.DROPPED_LINE_FMT = "Dropped by: %s"
+L.FISHED_LINE_FMT = "Fished: %s"
+L.GATHERED_LINE_FMT = "Gathered: %s"
+L.LOOTED_LINE_FMT = "Looted from: %s"
 L.SOURCE_ENTRY_FMT = "%s (%s)"
-L.VENDOR_ENTRY = "sold by vendors"
+L.VENDOR_LINE = "Sold by vendors"
 L.KEEP_FOR_LINE_FMT = "Keep for: %s (%d)"
 
 L.OPTIONS_HELP =

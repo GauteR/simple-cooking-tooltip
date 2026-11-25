@@ -7,6 +7,14 @@ local Ingredients = SimpleCookingTooltip.Ingredients
 
 local DEFAULT_MAX_SOURCES = 3
 
+-- Locale key of the line for each kind of source.
+local SOURCE_LINE_KEYS = {
+  drop = "DROPPED_LINE_FMT",
+  fish = "FISHED_LINE_FMT",
+  gather = "GATHERED_LINE_FMT",
+  object = "LOOTED_LINE_FMT",
+}
+
 -- Tie-break when two recipes need the same skill: easier to get first.
 local LEARN_RANK = { trainer = 1, item = 2 }
 
@@ -118,7 +126,7 @@ function Ingredients:GetNearestRecipe(itemId, player)
   return ahead or behind
 end
 
--- Where to get an ingredient: up to `max` (1-3) { name, zone } pairs, skipping zones only the other
+-- Where to get an ingredient: up to `max` (1-3) { name, zone, kind? } tables, skipping zones only the other
 -- faction visits. Second return is true when vendors sell it.
 function Ingredients:GetSources(itemId, player, max)
   local data = SimpleCookingTooltip.Data and SimpleCookingTooltip.Data.SOURCES
@@ -131,7 +139,7 @@ function Ingredients:GetSources(itemId, player, max)
   local sources = {}
   for i = 1, #entry.sources do
     local source = entry.sources[i]
-    local sourceFaction = source[3]
+    local sourceFaction = source.faction
     if sourceFaction == nil or faction == nil or sourceFaction == faction then
       sources[#sources + 1] = source
       if #sources == limit then
@@ -143,7 +151,7 @@ function Ingredients:GetSources(itemId, player, max)
 end
 
 -- Returns tooltip lines (empty when there is nothing to show):
---   "Found: Prowler (Elwynn Forest), sold by vendors"
+--   "Dropped by: Prowler (Elwynn Forest)"  /  "Fished: Darkshore"  /  "Sold by vendors"  (one line per kind)
 --   "Keep for: Spiced Wolf Meat (50)"   (nearest useful recipe upwards; no line when none is left)
 function Ingredients:BuildLines(itemId, config, player)
   local lines = {}
@@ -155,15 +163,22 @@ function Ingredients:BuildLines(itemId, config, player)
 
   if config.SHOW_SOURCES ~= false then
     local sources, vendor = self:GetSources(itemId, player, config.MAX_SOURCES)
-    local parts = {}
+    -- One line per kind (dropped / fished / gathered / looted), in the order the data lists them.
+    local order, groups = {}, {}
     for i = 1, #sources do
-      parts[#parts + 1] = T("SOURCE_ENTRY_FMT", sources[i][1], sources[i][2])
+      local kind = sources[i].kind or "drop"
+      if not groups[kind] then
+        groups[kind] = {}
+        order[#order + 1] = kind
+      end
+      local entry = kind == "fish" and sources[i].zone or T("SOURCE_ENTRY_FMT", sources[i].name, sources[i].zone)
+      groups[kind][#groups[kind] + 1] = entry
+    end
+    for i = 1, #order do
+      lines[#lines + 1] = T(SOURCE_LINE_KEYS[order[i]], table.concat(groups[order[i]], ", "))
     end
     if vendor then
-      parts[#parts + 1] = T("VENDOR_ENTRY")
-    end
-    if #parts > 0 then
-      lines[#lines + 1] = T("FOUND_LINE_FMT", table.concat(parts, ", "))
+      lines[#lines + 1] = T("VENDOR_LINE")
     end
   end
   if config.SHOW_KEEP_FOR ~= false then

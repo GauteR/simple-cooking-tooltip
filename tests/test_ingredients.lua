@@ -143,7 +143,7 @@ assert_eq(Ingredients:GetNearestRecipe(CRAG_BOAR_RIB, nil).name, "Beer Basted Bo
 assert_eq(#Ingredients:GetSources(WOLF_MEAT, nil, 3), 3, "no faction: all three wolf meat sources")
 local alliance = Ingredients:GetSources(WOLF_MEAT, Alliance, 3)
 assert_eq(#alliance, 1, "Alliance only sees the Elwynn source")
-assert_eq(alliance[1][1], "Prowler", "Alliance source is Prowler")
+assert_eq(alliance[1].name, "Prowler", "Alliance source is Prowler")
 assert_eq(#Ingredients:GetSources(WOLF_MEAT, Horde, 3), 2, "Horde sees the two Horde-zone sources")
 assert_eq(#Ingredients:GetSources(WOLF_MEAT, nil, 1), 1, "MAX_SOURCES = 1")
 assert_eq(#Ingredients:GetSources(WOLF_MEAT, nil, 99), 3, "MAX_SOURCES clamped to 3")
@@ -153,19 +153,26 @@ assert_eq(vendor, true, "Mild Spices sold by vendors")
 
 -- Lines.
 local lines = Ingredients:BuildLines(WOLF_MEAT, config, Player("Alliance", 46))
-assert_eq(#lines, 2, "Found line + Keep for line")
-assert_eq(lines[1], "Found: Prowler (Elwynn Forest)", "Alliance Found line")
+assert_eq(#lines, 2, "source line + Keep for line")
+assert_eq(lines[1], "Dropped by: Prowler (Elwynn Forest)", "Alliance sees the dropped-by line")
 assert_eq(lines[2], "Keep for: Spiced Wolf Meat (50)", "Keep for line names the nearest recipe")
 assert_eq(
   Ingredients:BuildLines(WOLF_MEAT, config, Horde)[1],
-  "Found: Mottled Worg (Silverpine Forest), Cursed Darkhound (Tirisfal Glades)",
-  "Horde Found line lists sources comma separated"
+  "Dropped by: Mottled Worg (Silverpine Forest), Cursed Darkhound (Tirisfal Glades)",
+  "Horde dropped-by line lists sources comma separated"
 )
-assert_eq(Ingredients:BuildLines(MILD_SPICES, config, Horde)[1], "Found: sold by vendors", "vendor Found line")
+assert_eq(Ingredients:BuildLines(MILD_SPICES, config, Horde)[1], "Sold by vendors", "vendor line")
+
+-- Other kinds: fishing lists zones only (Raw Brilliant Smallfish, item 6291).
+local fish = Ingredients:BuildLines(6291, { SHOW_KEEP_FOR = false }, Alliance)
+assert_eq(fish[1], "Fished: Elwynn Forest, Stormwind City", "Alliance fishing zones only, Mulgore hidden")
+local fishHorde = Ingredients:BuildLines(6291, { SHOW_KEEP_FOR = false }, Horde)
+assert_eq(fishHorde[1], "Fished: Mulgore", "Horde fishing zones only")
+
 local done = Ingredients:BuildLines(WOLF_MEAT, config, Player("Alliance", 300))
-assert_eq(#done, 1, "no future recipes: only the Found line")
-assert_eq(done[1], "Found: Prowler (Elwynn Forest)", "Found line remains when recipes are outgrown")
-assert_eq(#Ingredients:BuildLines(WOLF_MEAT, { SHOW_SOURCES = false }, nil), 1, "SHOW_SOURCES = false hides Found line")
+assert_eq(#done, 1, "no future recipes: only the source line")
+assert_eq(done[1], "Dropped by: Prowler (Elwynn Forest)", "source line remains when recipes are outgrown")
+assert_eq(#Ingredients:BuildLines(WOLF_MEAT, { SHOW_SOURCES = false }, nil), 1, "SHOW_SOURCES = false hides source lines")
 assert_eq(#Ingredients:BuildLines(WOLF_MEAT, { SHOW_KEEP_FOR = false }, nil), 1, "SHOW_KEEP_FOR = false hides Keep for line")
 assert_eq(#Ingredients:BuildLines(CRAG_BOAR_RIB, config, Horde), 0, "nothing for this faction yields no lines")
 assert_eq(#Ingredients:BuildLines(6948, config, Alliance), 0, "untracked yields no lines")
