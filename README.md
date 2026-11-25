@@ -26,7 +26,7 @@ Hover a cooking ingredient to see where to get it (mobs to farm, or vendors) and
 
 2. Restart the client, or log out and back in.
 3. Enable **Simple Cooking Tooltip** on the character addon list if it is disabled.
-4. Type `/sct` in chat for status.
+4. Type `/sct` in chat for status. It also prints the faction and Cooking skill the addon detected; if the skill says `not detected`, recipes are not hidden by skill.
 
 ## Configuration
 
@@ -67,6 +67,7 @@ Then `/reload` in-game.
 
 ```bash
 lua tests/test_ingredients.lua
+lua tests/test_player.lua
 lua tests/test_tooltip.lua
 ```
 

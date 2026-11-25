@@ -11,6 +11,7 @@ Locale/enUS.lua
 Data/Recipes.lua
 Data/Sources.lua
 Ingredients.lua
+Player.lua
 Core.lua
 Tooltip.lua
 UI/Options.lua

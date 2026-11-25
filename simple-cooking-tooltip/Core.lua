@@ -24,31 +24,20 @@ function SimpleCookingTooltip:GetPlayerFaction()
   return nil
 end
 
--- Current Cooking skill rank, or nil when the character has not learned Cooking.
-function SimpleCookingTooltip:GetCookingSkill()
-  if not (GetNumSkillLines and GetSkillLineInfo) then
-    return nil
-  end
-  for i = 1, GetNumSkillLines() do
-    local name, isHeader, _, rank = GetSkillLineInfo(i)
-    if not isHeader and name == "Cooking" then
-      return rank
-    end
-  end
-  return nil
-end
-
 -- { faction, skill } for Ingredients:BuildLines.
 function SimpleCookingTooltip:GetPlayerInfo()
   return {
     faction = self:GetPlayerFaction(),
-    skill = self:GetCookingSkill(),
+    skill = SimpleCookingTooltip.Player and SimpleCookingTooltip.Player:GetCookingSkill() or nil,
   }
 end
 
 function SimpleCookingTooltip:PrintStatus()
   if self:IsEnabled() then
     Print(self:T("CHAT_STATUS_ON"))
+    -- What the tooltips will filter by; "not detected" means recipes are not hidden by skill.
+    local info = self:GetPlayerInfo()
+    Print(self:T("CHAT_DETECTED_FMT", info.faction or self:T("CHAT_NOT_DETECTED"), info.skill or self:T("CHAT_NOT_DETECTED")))
   else
     Print(self:T("CHAT_STATUS_OFF"))
   end

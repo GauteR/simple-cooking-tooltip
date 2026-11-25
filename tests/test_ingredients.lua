@@ -89,6 +89,15 @@ assert_eq(Ingredients:GetNearestRecipe(MURLOC_FIN, Player("Alliance", 124)).name
 assert_eq(Ingredients:GetNearestRecipe(MURLOC_FIN, Player("Alliance", 149)).name, "Murloc Fin Soup", "needed until green")
 assert_eq(Ingredients:GetNearestRecipe(MURLOC_FIN, Player("Alliance", 150)), nil, "not needed once green")
 assert_eq(Ingredients:GetNearestRecipe(CRAG_BOAR_RIB, Player("Alliance", 124)), nil, "Beer Basted Boar Ribs is green at 124")
+-- Regression: Small Spider Leg is only used by Kaldorei Spider Kabob (optimal 50, green 70): nothing to
+-- keep it for at skill 124, but with an unreadable skill (nil) the lowest recipe is listed.
+local SMALL_SPIDER_LEG = 5465
+assert_eq(#Ingredients:BuildLines(SMALL_SPIDER_LEG, { SHOW_SOURCES = false }, Player("Alliance", 124)), 0, "no Keep for line for Small Spider Leg at 124")
+assert_eq(
+  Ingredients:BuildLines(SMALL_SPIDER_LEG, { SHOW_SOURCES = false }, Player("Alliance", nil))[1],
+  "Keep for: Kaldorei Spider Kabob (50)",
+  "skill not detected: lowest recipe listed"
+)
 assert_eq(
   Ingredients:BuildLines(MURLOC_FIN, { SHOW_SOURCES = false }, Player("Alliance", 124))[1],
   "Keep for: Murloc Fin Soup (130)",

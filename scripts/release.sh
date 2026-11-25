@@ -223,6 +223,7 @@ if [[ $SKIP_TESTS -eq 0 ]]; then
   fi
   echo "==> Running tests"
   lua tests/test_ingredients.lua
+  lua tests/test_player.lua
   lua tests/test_tooltip.lua
   lua tests/test_release_meta.lua
   lua tests/test_changelog_meta.lua
