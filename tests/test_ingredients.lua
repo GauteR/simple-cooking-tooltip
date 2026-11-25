@@ -64,15 +64,21 @@ local function Player(faction, skill)
 end
 local Alliance, Horde = Player("Alliance"), Player("Horde")
 
--- Nearest recipe upwards from the player's Cooking skill.
+-- Nearest recipe upwards from the player's Cooking skill (skill = level the recipe is learned at).
+-- Wolf meat: Charred Wolf Meat (0), Spiced Wolf Meat (10).
 assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, nil).name, "Charred Wolf Meat", "no player info: lowest-skill recipe")
-assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 1)).name, "Charred Wolf Meat", "skill 1: nearest is Charred Wolf Meat (45)")
-assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 45)).name, "Charred Wolf Meat", "recipe equal to skill counts")
-assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 46)).name, "Spiced Wolf Meat", "recipe below skill skipped")
-assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 51)), nil, "no future recipes")
+assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 1)).name, "Spiced Wolf Meat", "skill 1: Charred (0) is below, nearest is Spiced (10)")
+assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 10)).name, "Spiced Wolf Meat", "recipe equal to skill counts")
+assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 11)), nil, "no future recipes")
 assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, nil)).name, "Charred Wolf Meat", "no Cooking skill: lowest recipe")
 assert_eq(Ingredients:GetNearestRecipe(6948, Alliance), nil, "untracked item has no recipe")
 assert_eq(Ingredients:GetNearestRecipe("2672", Alliance), nil, "string id rejected")
+
+-- Regression: a skill-124 player is past Murloc Fin Soup (learned at 90, optimal at 130).
+local MURLOC_FIN = 1468
+assert_eq(recipes[3372].skill, 90, "Murloc Fin Soup is learned at 90, not its yellow level 130")
+assert_eq(Ingredients:GetNearestRecipe(MURLOC_FIN, Player("Alliance", 124)), nil, "no Keep for once past the learn level")
+assert_eq(#Ingredients:BuildLines(MURLOC_FIN, { SHOW_SOURCES = false }, Player("Alliance", 124)), 0, "no Keep for line at skill 124")
 
 -- Nearest is the lowest skill >= current skill, whatever the number of recipes.
 local nearestOk = true
@@ -113,10 +119,10 @@ local _, vendor = Ingredients:GetSources(MILD_SPICES, Horde, 3)
 assert_eq(vendor, true, "Mild Spices sold by vendors")
 
 -- Lines.
-local lines = Ingredients:BuildLines(WOLF_MEAT, config, Player("Alliance", 46))
+local lines = Ingredients:BuildLines(WOLF_MEAT, config, Player("Alliance", 1))
 assert_eq(#lines, 2, "Found line + Keep for line")
 assert_eq(lines[1], "Found: Prowler (Elwynn Forest)", "Alliance Found line")
-assert_eq(lines[2], "Keep for: Spiced Wolf Meat (50)", "Keep for line names the nearest recipe")
+assert_eq(lines[2], "Keep for: Spiced Wolf Meat (10)", "Keep for line names the nearest recipe")
 assert_eq(
   Ingredients:BuildLines(WOLF_MEAT, config, Horde)[1],
   "Found: Mottled Worg (Silverpine Forest), Cursed Darkhound (Tirisfal Glades)",

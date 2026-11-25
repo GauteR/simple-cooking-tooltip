@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Config: `SHOW_KEEP_FOR` added; `SHOW_SKILL` removed.
+- Recipe skill is the level the recipe is learned at (orange), not the optimal (yellow) level.
 
 ### Removed
 - The "Cooking skill needed for recipes" line (redundant with the recipe list) and `Data/Ingredients.lua` (split into `Recipes.lua` and `Sources.lua`).

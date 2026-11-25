@@ -132,8 +132,8 @@ def main():
     crawl = json.loads(crawl_path.read_text()) if crawl_path.exists() else {}
 
     ingredient_factions = load_ingredient_factions()
-    out, problems, inferred = [], [], []
-    for r in sorted(bbb, key=lambda r: (r["skill"], r["name"])):
+    out, problems, inferred, estimated = [], [], [], []
+    for r in sorted(bbb, key=lambda r: (r["skill"], r["name"])):  # sorted by yellow; order is cosmetic
         if r["spell"] in wowhead:
             reagents = [rid for rid, _qty in wowhead[r["spell"]]["reagents"]]
         elif str(r["bbb"]) in forever:
@@ -141,6 +141,18 @@ def main():
         else:
             problems.append("no reagents: %s (%d)" % (r["name"], r["spell"]))
             continue
+        # BBB "skill_required" is the yellow (optimal) level, not the level the recipe is learned at.
+        # Classic recipes: Wowhead learnedat. Forever-only recipes: estimate yellow - 40 (what 67 of the
+        # 88 Classic recipes follow), never below 1 (0 stays 0).
+        yellow = r["skill"]
+        if r["spell"] in wowhead:
+            learn_skill = wowhead[r["spell"]]["learnedat"]
+        elif yellow == 0:
+            learn_skill = 0
+        else:
+            learn_skill = max(1, yellow - 40)
+            estimated.append(r["name"])
+        r["skill"] = learn_skill
         faction = None
         info = crawl.get(str(r["spell"]))
         if info:
@@ -175,6 +187,7 @@ def main():
         else [m[0] for m in forever.get(str(r["bbb"]), {}).get("materials", [])])}
     written = write_sources(reagent_ids, load_sources())
     print("wrote sources for %d of %d reagents" % (written, len(reagent_ids)))
+    print("skill estimated (Forever-only, yellow - 40): %d" % len(estimated))
     print("faction inferred from ingredient zones: %d" % len(inferred))
     for i in inferred:
         print("  ", i)
