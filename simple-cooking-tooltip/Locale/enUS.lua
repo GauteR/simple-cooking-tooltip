@@ -17,7 +17,7 @@ L.VENDOR_ENTRY = "sold by vendors"
 L.KEEP_FOR_LINE_FMT = "Keep for: %s (%d)"
 
 L.OPTIONS_HELP =
-  "Hover a cooking ingredient to see where to get it (mobs to farm and zones for your faction, or vendors) and which recipe to keep it for: the nearest one above your current Cooking skill that your faction can learn."
+  "Hover a cooking ingredient to see where to get it (mobs to farm and zones for your faction, or vendors) and which recipe to keep it for: the nearest one that can still give you a skill-up and that your faction can learn. Nothing is shown when no recipe needs it any more."
 
 
 -- Resolve a locale key; optional format args.

@@ -76,9 +76,23 @@ local function Nearer(a, b)
   return a.name < b.name
 end
 
--- The recipe using `itemId` that is nearest upwards from the player's Cooking skill (required skill
--- >= current skill) among those the player's faction can learn. Returns the recipe table, or nil
--- when nothing is left ("no future recipes"). Without a known skill the lowest-skill recipe is used.
+-- Among recipes already past their optimal level, the one that keeps giving skill-ups the longest.
+local function LastsLonger(a, b)
+  if a.grey ~= b.grey then
+    return a.grey > b.grey
+  end
+  return Nearer(a, b)
+end
+
+-- A recipe counts while it can still give a skill-up: skill < grey (grey = no more skill-ups).
+local function StillUseful(recipe, skill)
+  return skill == nil or recipe.grey > skill
+end
+
+-- The recipe to keep `itemId` for: among recipes the player's faction can learn that can still give
+-- a skill-up (now or later), the nearest upwards (lowest optimal level >= current Cooking skill).
+-- When every such recipe is already past its optimal level, the one that stays useful the longest.
+-- Returns the recipe table, or nil when the ingredient is not needed any more.
 function Ingredients:GetNearestRecipe(itemId, player)
   local ids = type(itemId) == "number" and self:GetIndex()[itemId] or nil
   local recipes = SimpleCookingTooltip.Data and SimpleCookingTooltip.Data.RECIPES
@@ -86,16 +100,21 @@ function Ingredients:GetNearestRecipe(itemId, player)
     return nil
   end
   player = player or {}
-  local best = nil
+  local skill = player.skill
+  local ahead, behind = nil, nil
   for i = 1, #ids do
     local recipe = recipes[ids[i]]
-    if recipe and Obtainable(recipe, player.faction) and (player.skill == nil or recipe.skill >= player.skill) then
-      if not best or Nearer(recipe, best) then
-        best = recipe
+    if recipe and Obtainable(recipe, player.faction) and StillUseful(recipe, skill) then
+      if skill == nil or recipe.skill >= skill then
+        if not ahead or Nearer(recipe, ahead) then
+          ahead = recipe
+        end
+      elseif not behind or LastsLonger(recipe, behind) then
+        behind = recipe
       end
     end
   end
-  return best
+  return ahead or behind
 end
 
 -- Where to get an ingredient: up to `max` (1-3) { name, zone } pairs, skipping zones only the other
@@ -124,7 +143,7 @@ end
 
 -- Returns tooltip lines (empty when there is nothing to show):
 --   "Found: Prowler (Elwynn Forest), sold by vendors"
---   "Keep for: Spiced Wolf Meat (50)"   (nearest recipe upwards; no line when none is left)
+--   "Keep for: Spiced Wolf Meat (50)"   (nearest useful recipe upwards; no line when none is left)
 function Ingredients:BuildLines(itemId, config, player)
   local lines = {}
   config = config or {}

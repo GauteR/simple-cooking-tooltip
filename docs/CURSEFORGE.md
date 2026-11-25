@@ -18,7 +18,7 @@ Hover a cooking ingredient to see where to get it (mobs to farm, or vendors) and
 ## Features
 
 - `Found:` one line with where to get the ingredient: up to three mobs to farm with their zones, and/or vendors.
-- `Keep for:` the nearest recipe upwards from your current Cooking skill that uses the ingredient, for example `Keep for: Spiced Wolf Meat (50)`. No line when no higher recipe is left.
+- `Keep for:` a recipe that still needs the ingredient, for example `Keep for: Murloc Fin Soup (130)`. Any recipe that can still give you a skill-up counts (until it turns grey); the nearest one upwards from your Cooking skill is named. No line when no recipe needs it any more.
 - Faction aware: zones and recipes only the other faction can use are hidden.
 - Slash `/sct` for status
 - Feature flags to turn tooltip lines on or off
