@@ -44,8 +44,8 @@ for id, recipe in pairs(recipes) do
     and type(recipe.name) == "string"
     and type(recipe.skill) == "number"
     and recipe.skill >= 0
-    and type(recipe.grey) == "number"
-    and recipe.grey >= recipe.skill
+    and type(recipe.green) == "number"
+    and recipe.green >= recipe.skill
     and (recipe.learn == "trainer" or recipe.learn == "item")
     and (recipe.faction == nil or recipe.faction == "Alliance" or recipe.faction == "Horde")
     and type(recipe.reagents) == "table"
@@ -66,27 +66,29 @@ local function Player(faction, skill)
 end
 local Alliance, Horde = Player("Alliance"), Player("Horde")
 
--- Keep for: recipes that can still give a skill-up (skill < grey). Nearest upwards by optimal level;
--- when all are already past it, the one that stays useful longest.
--- Wolf meat: Charred Wolf Meat (45, grey 85), Spiced Wolf Meat (50, grey 90).
+-- Keep for: recipes that are still orange or yellow (skill < green); green recipes do not count.
+-- Nearest upwards by optimal level; when all are already past it, the one that stays useful longest.
+-- Wolf meat: Charred Wolf Meat (45, green 65), Spiced Wolf Meat (50, green 70).
 assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, nil).name, "Charred Wolf Meat", "no player info: lowest-skill recipe")
 assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 1)).name, "Charred Wolf Meat", "skill 1: nearest upwards is Charred (45)")
 assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 45)).name, "Charred Wolf Meat", "recipe equal to skill counts")
 assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 46)).name, "Spiced Wolf Meat", "skill 46: Charred is behind, nearest upwards is Spiced (50)")
-assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 60)).name, "Spiced Wolf Meat", "all past optimal: the one useful longest (grey 90)")
-assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 89)).name, "Spiced Wolf Meat", "still gives a skill-up at 89")
-assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 90)), nil, "grey at 90: no more skill-ups, no Keep for")
+assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 60)).name, "Spiced Wolf Meat", "all past optimal: the one useful longest (green 70)")
+assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 69)).name, "Spiced Wolf Meat", "still yellow/orange at 69")
+assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, 70)), nil, "green at 70: no Keep for")
 assert_eq(Ingredients:GetNearestRecipe(WOLF_MEAT, Player(nil, nil)).name, "Charred Wolf Meat", "no Cooking skill: lowest recipe")
 assert_eq(Ingredients:GetNearestRecipe(6948, Alliance), nil, "untracked item has no recipe")
 assert_eq(Ingredients:GetNearestRecipe("2672", Alliance), nil, "string id rejected")
 
--- Regression: skill 124, Murloc Fin Soup (optimal 130, grey 170) is still needed.
+-- Regression: skill 124, Murloc Fin Soup (optimal 130, green 150) is still needed; Beer Basted Boar Ribs
+-- (optimal 60, green 80) is not, however it is reached (hovering its reagent in the recipe pane).
 local MURLOC_FIN = 1468
 assert_eq(recipes[3372].skill, 130, "Murloc Fin Soup optimal level is 130")
-assert_eq(recipes[3372].grey, 170, "Murloc Fin Soup grey level is 170")
+assert_eq(recipes[3372].green, 150, "Murloc Fin Soup green level is 150")
 assert_eq(Ingredients:GetNearestRecipe(MURLOC_FIN, Player("Alliance", 124)).name, "Murloc Fin Soup", "needed at skill 124")
-assert_eq(Ingredients:GetNearestRecipe(MURLOC_FIN, Player("Alliance", 150)).name, "Murloc Fin Soup", "still needed past optimal, before grey")
-assert_eq(Ingredients:GetNearestRecipe(MURLOC_FIN, Player("Alliance", 170)), nil, "not needed once grey")
+assert_eq(Ingredients:GetNearestRecipe(MURLOC_FIN, Player("Alliance", 149)).name, "Murloc Fin Soup", "needed until green")
+assert_eq(Ingredients:GetNearestRecipe(MURLOC_FIN, Player("Alliance", 150)), nil, "not needed once green")
+assert_eq(Ingredients:GetNearestRecipe(CRAG_BOAR_RIB, Player("Alliance", 124)), nil, "Beer Basted Boar Ribs is green at 124")
 assert_eq(
   Ingredients:BuildLines(MURLOC_FIN, { SHOW_SOURCES = false }, Player("Alliance", 124))[1],
   "Keep for: Murloc Fin Soup (130)",
@@ -98,13 +100,13 @@ local function BruteForce(itemId, skill)
   local ahead, behind
   for _, recipe in pairs(recipes) do
     for _, reagent in ipairs(recipe.reagents) do
-      if reagent == itemId and recipe.grey > skill then
+      if reagent == itemId and recipe.green > skill then
         if recipe.skill >= skill then
           if not ahead or recipe.skill < ahead then
             ahead = recipe.skill
           end
-        elseif not behind or recipe.grey > behind then
-          behind = recipe.grey
+        elseif not behind or recipe.green > behind then
+          behind = recipe.green
         end
       end
     end
@@ -119,7 +121,7 @@ for skill = 1, 330, 7 do
   if ahead then
     ok = best ~= nil and best.skill == ahead
   elseif behind then
-    ok = best ~= nil and best.grey == behind
+    ok = best ~= nil and best.green == behind
   else
     ok = best == nil
   end

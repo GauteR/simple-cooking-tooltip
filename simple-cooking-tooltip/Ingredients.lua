@@ -76,21 +76,22 @@ local function Nearer(a, b)
   return a.name < b.name
 end
 
--- Among recipes already past their optimal level, the one that keeps giving skill-ups the longest.
+-- Among recipes already past their optimal level, the one that stays orange/yellow the longest.
 local function LastsLonger(a, b)
-  if a.grey ~= b.grey then
-    return a.grey > b.grey
+  if a.green ~= b.green then
+    return a.green > b.green
   end
   return Nearer(a, b)
 end
 
--- A recipe counts while it can still give a skill-up: skill < grey (grey = no more skill-ups).
+-- A recipe counts while it is still orange or yellow for the player (skill < green). Green recipes
+-- rarely give skill-ups, so they do not count.
 local function StillUseful(recipe, skill)
-  return skill == nil or recipe.grey > skill
+  return skill == nil or recipe.green > skill
 end
 
 -- The recipe to keep `itemId` for: among recipes the player's faction can learn that can still give
--- a skill-up (now or later), the nearest upwards (lowest optimal level >= current Cooking skill).
+-- orange or yellow (now or later), the nearest upwards (lowest optimal level >= current Cooking skill).
 -- When every such recipe is already past its optimal level, the one that stays useful the longest.
 -- Returns the recipe table, or nil when the ingredient is not needed any more.
 function Ingredients:GetNearestRecipe(itemId, player)
