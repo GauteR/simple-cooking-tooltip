@@ -13,9 +13,9 @@ Hover a cooking ingredient to see where to get it (mobs to farm, or vendors) and
 
 ## Features
 
-- Where to get the ingredient: up to three mobs to farm with their zones, or "Sold by vendors".
-- Up to five recipes per ingredient, each with the Cooking skill to learn it.
-- Faction aware: zones and recipes only the other faction can use are hidden. Recipes easiest first: trainers, then recipe items, then lowest skill.
+- `Found:` one line with where to get the ingredient: up to three mobs to farm with their zones, and/or vendors.
+- `Recipes:` one line with up to five recipes that use it, sorted by skill. Green = you know the recipe, red = you do not. Recipes below your current Cooking skill are hidden.
+- Faction aware: zones and recipes only the other faction can use are hidden.
 - Pure Lua unit tests; no SavedVariables; minimal memory footprint
 
 ## Install
@@ -35,8 +35,8 @@ Edit [`simple-cooking-tooltip/Config.lua`](simple-cooking-tooltip/Config.lua):
 | Setting | Default | Meaning |
 | --- | --- | --- |
 | `ENABLED` | `true` | Master flag. `false` disables slash, tooltips, and Options actions. |
-| `SHOW_RECIPES` | `true` | Show the recipe lines. |
-| `SHOW_SOURCES` | `true` | Show the `Found:` / `Sold by vendors` lines. |
+| `SHOW_RECIPES` | `true` | Show the `Recipes:` line. |
+| `SHOW_SOURCES` | `true` | Show the `Found:` line. |
 | `MAX_RECIPES` | `5` | Recipes listed (clamped to 1-5). |
 | `MAX_SOURCES` | `3` | Sources listed (clamped to 1-3). |
 | `SLASH_COMMAND` | `"/sct"` | Documented slash command. |

@@ -38,12 +38,12 @@ end
 
 local tip = NewMockTooltip()
 Tooltip:AppendForItem(tip, 2672)
-assert_eq(#tip.lines, 6, "blank spacer + three sources + two recipes")
+assert_eq(#tip.lines, 3, "blank spacer + Found line + Recipes line")
 Tooltip:AppendForItem(tip, 2672)
-assert_eq(#tip.lines, 6, "same item not appended twice")
+assert_eq(#tip.lines, 3, "same item not appended twice")
 Tooltip:ClearAppendState(tip)
 Tooltip:AppendForItem(tip, 2672)
-assert_eq(#tip.lines, 12, "appends again after clear")
+assert_eq(#tip.lines, 6, "appends again after clear")
 
 local other = NewMockTooltip()
 Tooltip:AppendForItem(other, 6948)

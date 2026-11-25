@@ -50,8 +50,8 @@ function Tooltip:AppendForItem(tooltip, itemId)
   if not Ingredients then
     return
   end
-  local faction = SimpleCookingTooltip.GetPlayerFaction and SimpleCookingTooltip:GetPlayerFaction() or nil
-  local lines = Ingredients:BuildLines(itemId, SimpleCookingTooltip.Config, faction)
+  local player = SimpleCookingTooltip.GetPlayerInfo and SimpleCookingTooltip:GetPlayerInfo() or nil
+  local lines = Ingredients:BuildLines(itemId, SimpleCookingTooltip.Config, player)
   if #lines == 0 then
     return
   end

@@ -11,12 +11,14 @@ L.CHAT_STATUS_ON = "Tooltips enabled."
 L.CHAT_STATUS_OFF = "Addon is disabled in Config."
 
 L.OPTIONS_VERSION_FMT = "Version %s"
-L.SOURCE_LINE_FMT = "Found: %s (%s)"
-L.VENDOR_LINE = "Sold by vendors"
-L.RECIPE_LINE_FMT = "%s (skill %d)"
+L.FOUND_LINE_FMT = "Found: %s"
+L.SOURCE_ENTRY_FMT = "%s (%s)"
+L.VENDOR_ENTRY = "sold by vendors"
+L.RECIPES_LINE_FMT = "Recipes: %s"
+L.RECIPE_ENTRY_FMT = "%s (%d)"
 
 L.OPTIONS_HELP =
-  "Hover a cooking ingredient to see where to get it (mobs to farm and zones for your faction, or vendors) and up to five recipes that use it, limited to recipes your faction can learn, easiest to get first."
+  "Hover a cooking ingredient to see where to get it (mobs to farm and zones for your faction, or vendors) and up to five recipes that use it, sorted by skill. Recipes below your Cooking skill are hidden; green recipes you know, red ones you do not."
 
 
 -- Resolve a locale key; optional format args.
