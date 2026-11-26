@@ -299,7 +299,7 @@ if (-not $SkipTests) {
     Write-Error "lua not found on PATH. Install a Lua interpreter or pass -SkipTests."
   }
   Write-Host "==> Running tests"
-  foreach ($test in @("test_ingredients.lua", "test_tooltip.lua", "test_release_meta.lua", "test_changelog_meta.lua")) {
+  foreach ($test in @("test_ingredients.lua", "test_player.lua", "test_tooltip.lua", "test_release_meta.lua", "test_changelog_meta.lua")) {
     & lua "tests/$test"
     if ($LASTEXITCODE -ne 0) {
       Write-Error "Tests failed ($test exit $LASTEXITCODE)."

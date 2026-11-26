@@ -16,3 +16,6 @@ scripts/forever-addons.path
 # Local git worktrees
 .worktree/
 
+
+# Saved source pages for the data generator
+data-src/

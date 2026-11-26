@@ -6,7 +6,9 @@ local addonRoot = root .. "/../simple-cooking-tooltip"
 
 dofile(addonRoot .. "/Config.lua")
 dofile(addonRoot .. "/Locale/enUS.lua")
-dofile(addonRoot .. "/Data/Ingredients.lua")
+dofile(addonRoot .. "/Data/Recipes.lua")
+dofile(addonRoot .. "/Data/Sources.lua")
+dofile(addonRoot .. "/Data/Zones.lua")
 dofile(addonRoot .. "/Ingredients.lua")
 dofile(addonRoot .. "/Tooltip.lua")
 
@@ -37,12 +39,12 @@ end
 
 local tip = NewMockTooltip()
 Tooltip:AppendForItem(tip, 2672)
-assert_eq(#tip.lines, 5, "blank spacer + skill + three sources")
+assert_eq(#tip.lines, 3, "blank spacer + dropped-by line + Keep for line")
 Tooltip:AppendForItem(tip, 2672)
-assert_eq(#tip.lines, 5, "same item not appended twice")
+assert_eq(#tip.lines, 3, "same item not appended twice")
 Tooltip:ClearAppendState(tip)
 Tooltip:AppendForItem(tip, 2672)
-assert_eq(#tip.lines, 10, "appends again after clear")
+assert_eq(#tip.lines, 6, "appends again after clear")
 
 local other = NewMockTooltip()
 Tooltip:AppendForItem(other, 6948)

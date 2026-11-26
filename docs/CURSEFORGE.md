@@ -13,13 +13,13 @@
 
 Cooking ingredient tooltip helper for **World of Warcraft: Forever**.
 
-Hover an ingredient to see where to farm it and which skill level the ingredient's recipes are used, in case you want to save it for that.
+Hover a cooking ingredient to see where to get it (mobs to farm, or vendors) and which recipe to keep it for.
 
 ## Features
 
-- Up to three main mob types, and their areas, per ingredient, most drops first.
-- The skill required to use an ingredient for any recipe, in case you need to know whether to save it for later.
-- Vendor-sold ingredients marked as such.
+- Where to get the ingredient, worded by how you get it, up to three sources in total: `Dropped by: Prowler (Elwynn Forest)`, `Fished: Darkshore, Elwynn Forest`, `Gathered: ...`, `Looted from: ...`, `Contained in: Small Barnacled Clam`, `Sold by vendors`. Zone names are coloured by level against your character: red = too high, yellow = on level, green = a little below, gray = far below.
+- `Keep for:` a recipe that still needs the ingredient, for example `Keep for: Murloc Fin Soup (130)`. A recipe counts while it is still orange or yellow for you (green recipes rarely give skill-ups, so they do not count); the nearest one upwards from your Cooking skill is named. No line when no recipe needs it any more.
+- Faction aware: zones and recipes only the other faction can use are hidden.
 - Slash `/sct` for status
 - Feature flags to turn tooltip lines on or off
 
