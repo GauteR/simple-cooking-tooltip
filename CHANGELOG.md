@@ -25,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cooking skill is read through the modern profession API (`GetProfessions`, `C_TradeSkillUI`) before the old skill list, so recipes you have outgrown are hidden. `/sct` prints the detected faction and skill.
 - `scripts/publish-local.*` ran tests that do not exist in this repository.
 
+## [1.0.0] - 2026-11-26
+
+### Changed
+
+- Show faction-aware recipes per ingredient (max 5) (#1)
+- Show mob types and areas; align texts with product description
+
 ## [0.1.0] - 2026-11-24
 
 ### Changed
