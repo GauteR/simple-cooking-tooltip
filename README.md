@@ -13,7 +13,7 @@ Hover a cooking ingredient to see where to get it (mobs to farm, or vendors) and
 
 ## Features
 
-- Where to get the ingredient, worded by how you get it, up to three sources in total: `Dropped by: Prowler (Elwynn Forest)`, `Fished: Darkshore, Elwynn Forest`, `Gathered: ...`, `Looted from: ...`, `Opened from: Small Barnacled Clam`, `Sold by vendors`. Zone names are coloured by level against your character: red = too high, yellow = on level, green = a little below, gray = far below.
+- Where to get the ingredient, worded by how you get it, up to three sources in total: `Dropped by: Prowler (Elwynn Forest)`, `Fished: Darkshore, Elwynn Forest`, `Gathered: ...`, `Looted from: ...`, `Contained in: Small Barnacled Clam`, `Sold by vendors`. Zone names are coloured by level against your character: red = too high, yellow = on level, green = a little below, gray = far below.
 - `Keep for:` a recipe that still needs the ingredient, for example `Keep for: Murloc Fin Soup (130)`. A recipe counts while it is still orange or yellow for you (green recipes rarely give skill-ups, so they do not count); the nearest one upwards from your Cooking skill is named. No line when no recipe needs it any more.
 - Faction aware: zones and recipes only the other faction can use are hidden.
 - Pure Lua unit tests; no SavedVariables; minimal memory footprint

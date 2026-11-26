@@ -17,15 +17,14 @@ L.DROPPED_LABEL = "Dropped by:"
 L.FISHED_LABEL = "Fished:"
 L.GATHERED_LABEL = "Gathered:"
 L.LOOTED_LABEL = "Looted from:"
-L.OPENED_LABEL = "Opened from:"
+L.OPENED_LABEL = "Contained in:"
 L.SOURCE_ENTRY_FMT = "%s (%s)"
 L.VENDOR_LINE = "Sold by vendors"
 L.KEEP_FOR_LABEL = "Keep for:"
 L.KEEP_FOR_ENTRY_FMT = "%s (%d)"
 
 L.OPTIONS_HELP =
-  "Hover a cooking ingredient to see where to get it (mobs to farm and zones for your faction, or vendors) and which recipe to keep it for: the nearest one that is still orange or yellow for you (green recipes rarely give skill-ups) and that your faction can learn. Nothing is shown when no recipe needs it any more."
-
+  "Hover an ingredient to see where to farm it, or what recipes to keep it for."
 
 -- Resolve a locale key; optional format args.
 function SimpleCookingTooltip:T(key, ...)

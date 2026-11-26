@@ -226,11 +226,11 @@ assert_eq(plainLevelless[1], Lbl("Dropped by:") .. " Prowler (Elwynn Forest)", "
 -- Container items: clam meat comes from clams, listed before the mob drops.
 local CLAM_MEAT = 5503
 local clamLines = Ingredients:BuildLines(CLAM_MEAT, { SHOW_KEEP_FOR = false }, Alliance)
-assert_eq(clamLines[1], Lbl("Opened from:") .. " Small Barnacled Clam", "clam meat: opened from the clam, no zone")
+assert_eq(clamLines[1], Lbl("Contained in:") .. " Small Barnacled Clam", "clam meat: opened from the clam, no zone")
 assert_eq(string.find(clamLines[2], "Dropped by:", 1, true) ~= nil, true, "mob drops follow the container line")
 assert_eq(#Ingredients:GetSources(CLAM_MEAT, Alliance, 3), 3, "container counts towards MAX_SOURCES")
 assert_eq(Ingredients:GetSources(CLAM_MEAT, nil, 1)[1].kind, "container", "container is the first source")
-assert_eq(Ingredients:BuildLines(7974, { SHOW_KEEP_FOR = false }, Alliance)[1], Lbl("Opened from:") .. " Big-mouth Clam", "zesty clam meat from Big-mouth Clam")
+assert_eq(Ingredients:BuildLines(7974, { SHOW_KEEP_FOR = false }, Alliance)[1], Lbl("Contained in:") .. " Big-mouth Clam", "zesty clam meat from Big-mouth Clam")
 
 -- Label colour is configurable and only wraps the label, not the values.
 local customLabel = Ingredients:BuildLines(WOLF_MEAT, { LABEL_COLOR = "66ccff", SHOW_KEEP_FOR = false }, Alliance)
