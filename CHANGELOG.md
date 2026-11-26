@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Recipe data for all 132 Forever Cooking recipes (`Data/Recipes.lua`) and ingredient sources (`Data/Sources.lua`), with generator `scripts/gen-recipes.py`.
 
 ### Changed
+- Clam meats list the clams that hold them (`Opened from: Small Barnacled Clam`) before mob drops. Data from Wowhead's "contained in item" list via `scripts/crawl-wowhead-items.py`.
 - Labels (`Dropped by:`, `Fished:`, `Keep for:`, `Sold by vendors`, ...) have their own colour (`LABEL_COLOR`, default gold) and the values are plain white.
 - Zone names in the source lines are coloured by level against your character (red / yellow / green / gray); `COLOR_ZONES`, `ZONE_YELLOW_RANGE`, `ZONE_GRAY_BELOW` in `Config.lua`. `/sct` also prints your level.
 - Config: `SHOW_KEEP_FOR` added; `SHOW_SKILL` removed.

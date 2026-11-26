@@ -31,6 +31,7 @@ local SOURCE_LINE_KEYS = {
   fish = "FISHED_LABEL",
   gather = "GATHERED_LABEL",
   object = "LOOTED_LABEL",
+  container = "OPENED_LABEL",
 }
 
 -- Tie-break when two recipes need the same skill: easier to get first.
@@ -144,7 +145,7 @@ function Ingredients:GetNearestRecipe(itemId, player)
   return ahead or behind
 end
 
--- Where to get an ingredient: up to `max` (1-3) { name, zone, kind? } tables, skipping zones only the other
+-- Where to get an ingredient: up to `max` (1-3) { name, zone?, kind? } tables, skipping zones only the other
 -- faction visits. Second return is true when vendors sell it.
 function Ingredients:GetSources(itemId, player, max)
   local data = SimpleCookingTooltip.Data and SimpleCookingTooltip.Data.SOURCES
@@ -229,8 +230,13 @@ function Ingredients:BuildLines(itemId, config, player)
         groups[kind] = {}
         order[#order + 1] = kind
       end
-      local zone = self:ColorZone(sources[i].zone, player.level, config)
-      local entry = kind == "fish" and zone or T("SOURCE_ENTRY_FMT", sources[i].name, zone)
+      local entry
+      if kind == "container" then
+        entry = sources[i].name -- an item you open: no zone
+      else
+        local zone = self:ColorZone(sources[i].zone, player.level, config)
+        entry = kind == "fish" and zone or T("SOURCE_ENTRY_FMT", sources[i].name, zone)
+      end
       groups[kind][#groups[kind] + 1] = entry
     end
     for i = 1, #order do
