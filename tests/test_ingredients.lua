@@ -8,6 +8,7 @@ dofile(addonRoot .. "/Config.lua")
 dofile(addonRoot .. "/Locale/enUS.lua")
 dofile(addonRoot .. "/Data/Recipes.lua")
 dofile(addonRoot .. "/Data/Sources.lua")
+dofile(addonRoot .. "/Data/Zones.lua")
 dofile(addonRoot .. "/Ingredients.lua")
 
 local failures = 0
@@ -177,6 +178,45 @@ local fish = Ingredients:BuildLines(6291, { SHOW_KEEP_FOR = false }, Alliance)
 assert_eq(fish[1], "Fished: Elwynn Forest, Stormwind City", "Alliance fishing zones only, Mulgore hidden")
 local fishHorde = Ingredients:BuildLines(6291, { SHOW_KEEP_FOR = false }, Horde)
 assert_eq(fishHorde[1], "Fished: Mulgore", "Horde fishing zones only")
+
+-- Zone colours against the character level (zone level = nearest level in its range).
+local function Zone(zone, level, cfg)
+  return Ingredients:GetZoneDifficulty(zone, level, cfg or config)
+end
+-- Elwynn Forest 1-10: yellow inside the range and up to 2 below it, green after that, gray 8+ below.
+assert_eq(Zone("Elwynn Forest", 5), "yellow", "level inside the range is yellow")
+assert_eq(Zone("Elwynn Forest", 12), "yellow", "2 levels above the range is still yellow")
+assert_eq(Zone("Elwynn Forest", 13), "green", "3 levels above the range is green")
+assert_eq(Zone("Elwynn Forest", 17), "green", "7 levels above the range is green")
+assert_eq(Zone("Elwynn Forest", 18), "gray", "8 levels above the range is gray")
+-- Westfall 10-20: red when the zone is more than 2 above the player.
+assert_eq(Zone("Westfall", 8), "yellow", "zone up to 2 above is yellow")
+assert_eq(Zone("Westfall", 7), "red", "zone 3 above is red")
+assert_eq(Zone("Westfall", 1), "red", "zone far above is red")
+assert_eq(Zone("Westfall", 15), "yellow", "inside the range")
+assert_eq(Zone("Orgrimmar", 30), nil, "city has no level range")
+assert_eq(Zone("Westfall", nil), nil, "unknown character level")
+assert_eq(Zone("Elwynn Forest", 18, { ZONE_GRAY_BELOW = 10 }), "green", "ZONE_GRAY_BELOW is configurable")
+assert_eq(Zone("Westfall", 7, { ZONE_YELLOW_RANGE = 3 }), "yellow", "ZONE_YELLOW_RANGE is configurable")
+
+assert_eq(
+  Ingredients:ColorZone("Elwynn Forest", 18, config),
+  "|cff9d9d9dElwynn Forest|r",
+  "gray zone name"
+)
+assert_eq(Ingredients:ColorZone("Elwynn Forest", 18, { COLOR_ZONES = false }), "Elwynn Forest", "COLOR_ZONES = false")
+assert_eq(Ingredients:ColorZone("Orgrimmar", 18, config), "Orgrimmar", "unknown zone stays plain")
+
+local coloured = Ingredients:BuildLines(WOLF_MEAT, { SHOW_KEEP_FOR = false }, { faction = "Alliance", level = 5 })
+assert_eq(coloured[1], "Dropped by: Prowler (|cffffff00Elwynn Forest|r)", "dropped-by zone coloured yellow")
+local fishColoured = Ingredients:BuildLines(6291, { SHOW_KEEP_FOR = false }, { faction = "Alliance", level = 30 })
+assert_eq(
+  fishColoured[1],
+  "Fished: |cff9d9d9dElwynn Forest|r, Stormwind City",
+  "fished zones coloured; the city stays plain"
+)
+local plainLevelless = Ingredients:BuildLines(WOLF_MEAT, { SHOW_KEEP_FOR = false }, { faction = "Alliance" })
+assert_eq(plainLevelless[1], "Dropped by: Prowler (Elwynn Forest)", "no character level: no colours")
 
 local done = Ingredients:BuildLines(WOLF_MEAT, config, Player("Alliance", 300))
 assert_eq(#done, 1, "no future recipes: only the source line")

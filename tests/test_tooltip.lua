@@ -8,6 +8,7 @@ dofile(addonRoot .. "/Config.lua")
 dofile(addonRoot .. "/Locale/enUS.lua")
 dofile(addonRoot .. "/Data/Recipes.lua")
 dofile(addonRoot .. "/Data/Sources.lua")
+dofile(addonRoot .. "/Data/Zones.lua")
 dofile(addonRoot .. "/Ingredients.lua")
 dofile(addonRoot .. "/Tooltip.lua")
 

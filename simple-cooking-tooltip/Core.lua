@@ -24,11 +24,12 @@ function SimpleCookingTooltip:GetPlayerFaction()
   return nil
 end
 
--- { faction, skill } for Ingredients:BuildLines.
+-- { faction, skill, level } for Ingredients:BuildLines.
 function SimpleCookingTooltip:GetPlayerInfo()
   return {
     faction = self:GetPlayerFaction(),
     skill = SimpleCookingTooltip.Player and SimpleCookingTooltip.Player:GetCookingSkill() or nil,
+    level = UnitLevel and UnitLevel("player") or nil,
   }
 end
 
@@ -37,7 +38,8 @@ function SimpleCookingTooltip:PrintStatus()
     Print(self:T("CHAT_STATUS_ON"))
     -- What the tooltips will filter by; "not detected" means recipes are not hidden by skill.
     local info = self:GetPlayerInfo()
-    Print(self:T("CHAT_DETECTED_FMT", info.faction or self:T("CHAT_NOT_DETECTED"), info.skill or self:T("CHAT_NOT_DETECTED")))
+    local unknown = self:T("CHAT_NOT_DETECTED")
+    Print(self:T("CHAT_DETECTED_FMT", info.faction or unknown, info.level or unknown, info.skill or unknown))
   else
     Print(self:T("CHAT_STATUS_OFF"))
   end

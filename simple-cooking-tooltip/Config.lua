@@ -10,6 +10,13 @@ SimpleCookingTooltip.Config = {
   SHOW_SOURCES = true,
   -- Maximum number of sources listed (1-3).
   MAX_SOURCES = 3,
+  -- Colour zone names by level against your character: red above, yellow on level, green a little
+  -- below, gray far below.
+  COLOR_ZONES = true,
+  -- A zone within this many levels of yours (above or below) is yellow; more above is red.
+  ZONE_YELLOW_RANGE = 2,
+  -- Zones this many levels or more below you are gray (between yellow and gray is green).
+  ZONE_GRAY_BELOW = 8,
   ADDON_NAME = "Simple Cooking Tooltip",
   -- Shown in Options when TOC ## Version: @project-version@ is not packaged yet.
   VERSION = "0.1.0",

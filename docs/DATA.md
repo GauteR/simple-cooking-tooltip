@@ -11,6 +11,8 @@ Selection on the tooltip (`Keep for:`): faction filter, then keep recipes that a
 
 [`Data/Sources.lua`](../simple-cooking-tooltip/Data/Sources.lua) maps reagent item id to `sources = { { name, zone, faction?, kind? }, ... }` (up to three, most drops first) and `vendor = true` when vendors sell it. A source's `kind` (omitted = dropped by a mob; `fish`, `gather` for herbs, `object` for containers) picks the wording (`Dropped by:`, `Fished:`, `Gathered:`, `Looted from:`); `kind` is derived in the generator (`HERBS`, `OBJECTS`). A source carries `faction` when its zone belongs to one faction only (see `ZONES` in the generator) and is hidden from the other faction. Sources cover 91 of 113 reagents; the rest (some herbs and juices, Simple Flour, and Forever-only items such as Hyjal Berries, Whimsyfin and Thick Logs) show recipes only.
 
+[`Data/Zones.lua`](../simple-cooking-tooltip/Data/Zones.lua) holds a level range per zone (`[zone] = { min, max }`) used to colour zone names. It is hand-written from the Classic zone list, **not generated or verified in Forever**; the capital cities have no range and stay uncoloured. The zone level used is the one in its range nearest to the character, so a zone whose range contains your level is yellow.
+
 ## Provenance
 
 Generated 2026-11-24 from saved pages (kept in git-ignored `data-src/`):

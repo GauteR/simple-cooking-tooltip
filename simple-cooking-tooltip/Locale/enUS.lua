@@ -10,7 +10,7 @@ L.CHAT_DISABLED = "Addon is disabled."
 L.CHAT_STATUS_ON = "Tooltips enabled."
 L.CHAT_STATUS_OFF = "Addon is disabled in Config."
 L.CHAT_NOT_DETECTED = "not detected"
-L.CHAT_DETECTED_FMT = "Faction: %s, Cooking skill: %s."
+L.CHAT_DETECTED_FMT = "Faction: %s, level: %s, Cooking skill: %s."
 
 L.OPTIONS_VERSION_FMT = "Version %s"
 L.DROPPED_LINE_FMT = "Dropped by: %s"

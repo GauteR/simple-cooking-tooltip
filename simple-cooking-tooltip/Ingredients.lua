@@ -1,11 +1,20 @@
 -- Ingredient -> recipe lookup, faction/skill filtering and tooltip line formatting (pure Lua, no client API).
--- `player` (optional) = { faction = "Alliance"|"Horde"|nil, skill = Cooking rank|nil }
+-- `player` (optional) = { faction = "Alliance"|"Horde"|nil, skill = Cooking rank|nil, level = character level|nil }
 SimpleCookingTooltip = SimpleCookingTooltip or {}
 SimpleCookingTooltip.Ingredients = SimpleCookingTooltip.Ingredients or {}
 
 local Ingredients = SimpleCookingTooltip.Ingredients
 
 local DEFAULT_MAX_SOURCES = 3
+
+-- Zone name colours, like mob difficulty: red = too high, yellow = on level, green = a little below,
+-- gray = far below.
+local ZONE_COLORS = {
+  red = "|cffff3030",
+  yellow = "|cffffff00",
+  green = "|cff1eff00",
+  gray = "|cff9d9d9d",
+}
 
 -- Locale key of the line for each kind of source.
 local SOURCE_LINE_KEYS = {
@@ -150,6 +159,45 @@ function Ingredients:GetSources(itemId, player, max)
   return sources, entry.vendor == true
 end
 
+-- Difficulty of a zone for a character of `level`: "red", "yellow", "green" or "gray"; nil when the zone
+-- has no known level range or the level is unknown. The zone level used is the one in its range nearest
+-- to the player, so a zone whose range contains the player's level is yellow.
+--   more than YELLOW_RANGE above the player -> red
+--   within YELLOW_RANGE (default 2) above or below -> yellow
+--   below that, up to ZONE_GRAY_BELOW (default 8) levels below -> green, further below -> gray
+function Ingredients:GetZoneDifficulty(zone, level, config)
+  local zones = SimpleCookingTooltip.Data and SimpleCookingTooltip.Data.ZONES
+  local range = zones and zones[zone] or nil
+  if not range or type(level) ~= "number" then
+    return nil
+  end
+  config = config or {}
+  local band = tonumber(config.ZONE_YELLOW_RANGE) or 2
+  local gray = tonumber(config.ZONE_GRAY_BELOW) or 8
+  local nearest = math.min(math.max(level, range[1]), range[2])
+  local diff = nearest - level
+  if diff > band then
+    return "red"
+  elseif diff >= -band then
+    return "yellow"
+  elseif diff > -gray then
+    return "green"
+  end
+  return "gray"
+end
+
+-- The zone name, coloured by difficulty when COLOR_ZONES is on and the zone level is known.
+function Ingredients:ColorZone(zone, level, config)
+  if config and config.COLOR_ZONES == false then
+    return zone
+  end
+  local difficulty = self:GetZoneDifficulty(zone, level, config)
+  if not difficulty then
+    return zone
+  end
+  return ZONE_COLORS[difficulty] .. zone .. "|r"
+end
+
 -- Returns tooltip lines (empty when there is nothing to show):
 --   "Dropped by: Prowler (Elwynn Forest)"  /  "Fished: Darkshore"  /  "Sold by vendors"  (one line per kind)
 --   "Keep for: Spiced Wolf Meat (50)"   (nearest useful recipe upwards; no line when none is left)
@@ -171,7 +219,8 @@ function Ingredients:BuildLines(itemId, config, player)
         groups[kind] = {}
         order[#order + 1] = kind
       end
-      local entry = kind == "fish" and sources[i].zone or T("SOURCE_ENTRY_FMT", sources[i].name, sources[i].zone)
+      local zone = self:ColorZone(sources[i].zone, player.level, config)
+      local entry = kind == "fish" and zone or T("SOURCE_ENTRY_FMT", sources[i].name, zone)
       groups[kind][#groups[kind] + 1] = entry
     end
     for i = 1, #order do
