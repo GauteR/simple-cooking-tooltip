@@ -38,6 +38,7 @@ Edit [`simple-cooking-tooltip/Config.lua`](simple-cooking-tooltip/Config.lua):
 | `SHOW_KEEP_FOR` | `true` | Show the `Keep for:` line. |
 | `SHOW_SOURCES` | `true` | Show the source lines (`Dropped by:`, `Fished:`, ...). |
 | `MAX_SOURCES` | `3` | Sources listed (clamped to 1-3). |
+| `LABEL_COLOR` | `"ffd100"` | Hex colour of the labels (`Dropped by:`, `Keep for:`, ...); the values stay white. |
 | `COLOR_ZONES` | `true` | Colour zone names by level against your character. |
 | `ZONE_YELLOW_RANGE` | `2` | Zones within this many levels (above or below) are yellow; further above is red. |
 | `ZONE_GRAY_BELOW` | `8` | Zones this many levels or more below you are gray; in between is green. |

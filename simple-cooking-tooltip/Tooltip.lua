@@ -58,8 +58,8 @@ function Tooltip:AppendForItem(tooltip, itemId)
 
   tooltip:AddLine(" ")
   for i = 1, #lines do
-    -- Gold text; wrap long recipe names.
-    tooltip:AddLine(lines[i], 1, 0.82, 0.2, true)
+    -- White values (labels and zone names carry their own colour codes); wrap long lines.
+    tooltip:AddLine(lines[i], 1, 1, 1, true)
   end
   tooltip[APPENDED_FLAG] = itemId
 end

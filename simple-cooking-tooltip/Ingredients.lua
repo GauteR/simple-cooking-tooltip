@@ -7,6 +7,15 @@ local Ingredients = SimpleCookingTooltip.Ingredients
 
 local DEFAULT_MAX_SOURCES = 3
 
+-- Labels ("Dropped by:", "Keep for:", ...) get their own colour; the values after them are plain white
+-- (zone names keep their level colours). `LABEL_COLOR` in Config.lua is a hex string like "ffd100".
+local DEFAULT_LABEL_COLOR = "ffd100"
+
+local function Label(text, config)
+  local color = config and config.LABEL_COLOR or DEFAULT_LABEL_COLOR
+  return "|cff" .. color .. text .. "|r"
+end
+
 -- Zone name colours, like mob difficulty: red = too high, yellow = on level, green = a little below,
 -- gray = far below.
 local ZONE_COLORS = {
@@ -16,12 +25,12 @@ local ZONE_COLORS = {
   gray = "|cff9d9d9d",
 }
 
--- Locale key of the line for each kind of source.
+-- Locale key of the label for each kind of source.
 local SOURCE_LINE_KEYS = {
-  drop = "DROPPED_LINE_FMT",
-  fish = "FISHED_LINE_FMT",
-  gather = "GATHERED_LINE_FMT",
-  object = "LOOTED_LINE_FMT",
+  drop = "DROPPED_LABEL",
+  fish = "FISHED_LABEL",
+  gather = "GATHERED_LABEL",
+  object = "LOOTED_LABEL",
 }
 
 -- Tie-break when two recipes need the same skill: easier to get first.
@@ -199,7 +208,8 @@ function Ingredients:ColorZone(zone, level, config)
 end
 
 -- Returns tooltip lines (empty when there is nothing to show):
---   "Dropped by: Prowler (Elwynn Forest)"  /  "Fished: Darkshore"  /  "Sold by vendors"  (one line per kind)
+--   "Dropped by: Prowler (Elwynn Forest)"  /  "Fished: Darkshore"  /  "Sold by vendors"  (one line per kind;
+--   the label is coloured, the values are plain)
 --   "Keep for: Spiced Wolf Meat (50)"   (nearest useful recipe upwards; no line when none is left)
 function Ingredients:BuildLines(itemId, config, player)
   local lines = {}
@@ -224,16 +234,16 @@ function Ingredients:BuildLines(itemId, config, player)
       groups[kind][#groups[kind] + 1] = entry
     end
     for i = 1, #order do
-      lines[#lines + 1] = T(SOURCE_LINE_KEYS[order[i]], table.concat(groups[order[i]], ", "))
+      lines[#lines + 1] = Label(T(SOURCE_LINE_KEYS[order[i]]), config) .. " " .. table.concat(groups[order[i]], ", ")
     end
     if vendor then
-      lines[#lines + 1] = T("VENDOR_LINE")
+      lines[#lines + 1] = Label(T("VENDOR_LINE"), config)
     end
   end
   if config.SHOW_KEEP_FOR ~= false then
     local recipe = self:GetNearestRecipe(itemId, player)
     if recipe then
-      lines[#lines + 1] = T("KEEP_FOR_LINE_FMT", recipe.name, math.max(recipe.skill, 1))
+      lines[#lines + 1] = Label(T("KEEP_FOR_LABEL"), config) .. " " .. T("KEEP_FOR_ENTRY_FMT", recipe.name, math.max(recipe.skill, 1))
     end
   end
   return lines

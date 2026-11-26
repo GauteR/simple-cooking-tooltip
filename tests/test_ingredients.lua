@@ -23,6 +23,11 @@ local function assert_eq(actual, expected, message)
 end
 
 local Ingredients = SimpleCookingTooltip.Ingredients
+
+-- Labels are wrapped in the label colour (default gold); values are plain.
+local function Lbl(text)
+  return "|cffffd100" .. text .. "|r"
+end
 local recipes = SimpleCookingTooltip.Data.RECIPES
 local config = SimpleCookingTooltip.Config
 
@@ -96,12 +101,12 @@ local SMALL_SPIDER_LEG = 5465
 assert_eq(#Ingredients:BuildLines(SMALL_SPIDER_LEG, { SHOW_SOURCES = false }, Player("Alliance", 124)), 0, "no Keep for line for Small Spider Leg at 124")
 assert_eq(
   Ingredients:BuildLines(SMALL_SPIDER_LEG, { SHOW_SOURCES = false }, Player("Alliance", nil))[1],
-  "Keep for: Kaldorei Spider Kabob (50)",
+  Lbl("Keep for:") .. " Kaldorei Spider Kabob (50)",
   "skill not detected: lowest recipe listed"
 )
 assert_eq(
   Ingredients:BuildLines(MURLOC_FIN, { SHOW_SOURCES = false }, Player("Alliance", 124))[1],
-  "Keep for: Murloc Fin Soup (130)",
+  Lbl("Keep for:") .. " Murloc Fin Soup (130)",
   "Keep for line at skill 124"
 )
 
@@ -164,20 +169,20 @@ assert_eq(vendor, true, "Mild Spices sold by vendors")
 -- Lines.
 local lines = Ingredients:BuildLines(WOLF_MEAT, config, Player("Alliance", 46))
 assert_eq(#lines, 2, "source line + Keep for line")
-assert_eq(lines[1], "Dropped by: Prowler (Elwynn Forest)", "Alliance sees the dropped-by line")
-assert_eq(lines[2], "Keep for: Spiced Wolf Meat (50)", "Keep for line names the nearest recipe")
+assert_eq(lines[1], Lbl("Dropped by:") .. " Prowler (Elwynn Forest)", "Alliance sees the dropped-by line")
+assert_eq(lines[2], Lbl("Keep for:") .. " Spiced Wolf Meat (50)", "Keep for line names the nearest recipe")
 assert_eq(
   Ingredients:BuildLines(WOLF_MEAT, config, Horde)[1],
-  "Dropped by: Mottled Worg (Silverpine Forest), Cursed Darkhound (Tirisfal Glades)",
+  Lbl("Dropped by:") .. " Mottled Worg (Silverpine Forest), Cursed Darkhound (Tirisfal Glades)",
   "Horde dropped-by line lists sources comma separated"
 )
-assert_eq(Ingredients:BuildLines(MILD_SPICES, config, Horde)[1], "Sold by vendors", "vendor line")
+assert_eq(Ingredients:BuildLines(MILD_SPICES, config, Horde)[1], Lbl("Sold by vendors"), "vendor line")
 
 -- Other kinds: fishing lists zones only (Raw Brilliant Smallfish, item 6291).
 local fish = Ingredients:BuildLines(6291, { SHOW_KEEP_FOR = false }, Alliance)
-assert_eq(fish[1], "Fished: Elwynn Forest, Stormwind City", "Alliance fishing zones only, Mulgore hidden")
+assert_eq(fish[1], Lbl("Fished:") .. " Elwynn Forest, Stormwind City", "Alliance fishing zones only, Mulgore hidden")
 local fishHorde = Ingredients:BuildLines(6291, { SHOW_KEEP_FOR = false }, Horde)
-assert_eq(fishHorde[1], "Fished: Mulgore", "Horde fishing zones only")
+assert_eq(fishHorde[1], Lbl("Fished:") .. " Mulgore", "Horde fishing zones only")
 
 -- Zone colours against the character level (zone level = nearest level in its range).
 local function Zone(zone, level, cfg)
@@ -208,19 +213,23 @@ assert_eq(Ingredients:ColorZone("Elwynn Forest", 18, { COLOR_ZONES = false }), "
 assert_eq(Ingredients:ColorZone("Orgrimmar", 18, config), "Orgrimmar", "unknown zone stays plain")
 
 local coloured = Ingredients:BuildLines(WOLF_MEAT, { SHOW_KEEP_FOR = false }, { faction = "Alliance", level = 5 })
-assert_eq(coloured[1], "Dropped by: Prowler (|cffffff00Elwynn Forest|r)", "dropped-by zone coloured yellow")
+assert_eq(coloured[1], Lbl("Dropped by:") .. " Prowler (|cffffff00Elwynn Forest|r)", "dropped-by zone coloured yellow")
 local fishColoured = Ingredients:BuildLines(6291, { SHOW_KEEP_FOR = false }, { faction = "Alliance", level = 30 })
 assert_eq(
   fishColoured[1],
-  "Fished: |cff9d9d9dElwynn Forest|r, Stormwind City",
+  Lbl("Fished:") .. " |cff9d9d9dElwynn Forest|r, Stormwind City",
   "fished zones coloured; the city stays plain"
 )
 local plainLevelless = Ingredients:BuildLines(WOLF_MEAT, { SHOW_KEEP_FOR = false }, { faction = "Alliance" })
-assert_eq(plainLevelless[1], "Dropped by: Prowler (Elwynn Forest)", "no character level: no colours")
+assert_eq(plainLevelless[1], Lbl("Dropped by:") .. " Prowler (Elwynn Forest)", "no character level: no colours")
+
+-- Label colour is configurable and only wraps the label, not the values.
+local customLabel = Ingredients:BuildLines(WOLF_MEAT, { LABEL_COLOR = "66ccff", SHOW_KEEP_FOR = false }, Alliance)
+assert_eq(customLabel[1], "|cff66ccffDropped by:|r Prowler (Elwynn Forest)", "LABEL_COLOR changes the label colour")
 
 local done = Ingredients:BuildLines(WOLF_MEAT, config, Player("Alliance", 300))
 assert_eq(#done, 1, "no future recipes: only the source line")
-assert_eq(done[1], "Dropped by: Prowler (Elwynn Forest)", "source line remains when recipes are outgrown")
+assert_eq(done[1], Lbl("Dropped by:") .. " Prowler (Elwynn Forest)", "source line remains when recipes are outgrown")
 assert_eq(#Ingredients:BuildLines(WOLF_MEAT, { SHOW_SOURCES = false }, nil), 1, "SHOW_SOURCES = false hides source lines")
 assert_eq(#Ingredients:BuildLines(WOLF_MEAT, { SHOW_KEEP_FOR = false }, nil), 1, "SHOW_KEEP_FOR = false hides Keep for line")
 assert_eq(#Ingredients:BuildLines(CRAG_BOAR_RIB, config, Horde), 0, "nothing for this faction yields no lines")

@@ -10,6 +10,8 @@ SimpleCookingTooltip.Config = {
   SHOW_SOURCES = true,
   -- Maximum number of sources listed (1-3).
   MAX_SOURCES = 3,
+  -- Colour of the labels ("Dropped by:", "Keep for:", ...) as a hex string; the values stay white.
+  LABEL_COLOR = "ffd100",
   -- Colour zone names by level against your character: red above, yellow on level, green a little
   -- below, gray far below.
   COLOR_ZONES = true,
